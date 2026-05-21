@@ -99,7 +99,7 @@ def search_by_image(image_embedding: list[float], top_k: int = 10) -> list[Searc
 def hybrid_search(image_emb: list[float], text_emb: list[float], top_k: int = 10) -> list[SearchResult]: ...
 ```
 
-## 7. 性能与质量指标 (Metrics)
+## 7. 性能与 quality 指标 (Metrics)
 - **响应耗时**: 全链路检索 (Embedding + Vector Search) P95 < **500ms**。
 - **搜索准确度**: 
   - Top-1 命中率 > 70% (针对同款)。
@@ -113,4 +113,5 @@ def hybrid_search(image_emb: list[float], text_emb: list[float], top_k: int = 10
 - **代理设置**: 在 Windows 下运行爬虫时，如遇到网络问题，请检查环境变量或系统代理配置。
 
 ---
+
 *Last Updated: 2026-05-20*
