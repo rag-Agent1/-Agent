@@ -1,0 +1,72 @@
+{
+  "D:\\Trae CN Work\\Rag-Agent\\.vscode\\extensions.json": {
+    "mtime": 1778842091.6114123,
+    "ast_hash": "f2aae3cd5600ff53b4e4b5e7694b6e89",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\.vscode\\launch.json": {
+    "mtime": 1778842091.6114123,
+    "ast_hash": "27b39497c2d27f863d1fbbea86e2e67a",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\.vscode\\settings.json": {
+    "mtime": 1778842091.6128836,
+    "ast_hash": "bc243b39bd1983948a12cce68b519237",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\AGENTS.md": {
+    "mtime": 1778844515.3846414,
+    "ast_hash": "22e263ebb43e933f6bc6423bf78e892f",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\README.md": {
+    "mtime": 1778750809.9419587,
+    "ast_hash": "1d18456887b2764c7e4bcf58f58b0ad2",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\android\\02-API\u63a5\u53e3\u6587\u6863.md": {
+    "mtime": 1778842091.6139357,
+    "ast_hash": "6a9b59393c669d7bebac38f55c129992",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\backend\\docker-compose.yml": {
+    "mtime": 1778842091.6165426,
+    "ast_hash": "cce5b2f78538ae6c43e13006f5a03681",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\backend\\requirements.txt": {
+    "mtime": 1778842091.6201923,
+    "ast_hash": "2c69ae64edaf87f0fcd8b467e9ebc66f",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\backend\\md\\01-\u603b\u4f53\u67b6\u6784\u8bbe\u8ba1.md": {
+    "mtime": 1778842091.6165426,
+    "ast_hash": "0ce514c7e3ffc3bd9c6cf9b37232441e",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\backend\\md\\03-\u6d4b\u8bd5\u65b9\u6848.md": {
+    "mtime": 1778842091.6180904,
+    "ast_hash": "54574461c8ef241d7b51211d61574fc0",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\backend\\md\\04-\u90e8\u7f72\u4e0e\u8fd0\u7ef4.md": {
+    "mtime": 1778842091.6180904,
+    "ast_hash": "a07f74afa2768083560d2996cde30de1",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\backend\\md\\05-\u6570\u636e\u51c6\u5907\u65b9\u6848.md": {
+    "mtime": 1778842091.6180904,
+    "ast_hash": "3634cc2aff9ae7db6ab187fc599c7d64",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\backend\\md\\\u540e\u7aef\u67b6\u6784\u8bbe\u8ba1.md": {
+    "mtime": 1778842091.619616,
+    "ast_hash": "19e8a8f130f431fb08f6d896c92ef22e",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\01-RAG\u6a21\u5757\u5bf9\u63a5\u63a5\u53e3.md": {
+    "mtime": 1778842448.2717462,
+    "ast_hash": "135b6e5580dd552d0d692b96c15e2bd4",
+    "semantic_hash": ""
+  }
+}
