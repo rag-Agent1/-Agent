@@ -4,6 +4,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# 清理 Qdrant 向量数据库中的集合并重新初始化
 def clear_collection(collection_name="products"):
     client = get_qdrant_client()
     try:

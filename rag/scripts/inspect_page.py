@@ -9,6 +9,7 @@ except ImportError as e:
     print("2. playwright install chromium")
     sys.exit(1)
 
+# 使用 Playwright 探测李宁官网页面结构，辅助爬虫定位元素
 async def inspect():
     async with async_playwright() as p:
         browser = await p.chromium.launch()

@@ -2,6 +2,7 @@ import csv
 import os
 import random
 
+# 根据本地图片文件夹自动生成 mock 商品元数据 products.csv
 def generate_products_csv(image_dir, output_csv):
     """
     根据下载的本地图片生成 products.csv

@@ -14,6 +14,7 @@ from rag.image_search import search_by_image
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# 端到端测试“以图搜图”功能，验证向量检索的准确度
 def test_image_search(image_path: str):
     """
     测试以图搜图功能

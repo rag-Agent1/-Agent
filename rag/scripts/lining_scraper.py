@@ -25,6 +25,7 @@ DATA_DIR = os.path.join(BASE_DIR, "rag", "data")
 IMAGES_DIR = os.path.join(DATA_DIR, "images")
 PRODUCTS_CSV = os.path.join(DATA_DIR, "products.csv")
 
+# 自动化抓取李宁官网羽毛球鞋数据（名称、价格、高清图）并更新本地库
 async def scrape_and_update():
     search_url = "https://store.lining.com/goods/list?key=%E7%BE%BD%E6%AF%9B%E7%90%83%E9%9E%8B"
     

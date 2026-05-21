@@ -4,6 +4,7 @@ import csv
 from PIL import Image
 from io import BytesIO
 
+# 针对特定商品 ID 重新下载并转换其高清图片
 def update_image():
     csv_path = r"d:\Trae CN Work\Rag-Agent\rag\data\products.csv"
     images_dir = r"d:\Trae CN Work\Rag-Agent\rag\data\images"

@@ -11,6 +11,7 @@ from rag.embedding import embed_text, embed_image
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# 根据输入字符串生成确定性的 UUID，确保多次运行脚本时同一个商品对应同一个 ID
 def generate_deterministic_uuid(input_str: str) -> str:
     """
     根据输入字符串生成确定性的 UUID

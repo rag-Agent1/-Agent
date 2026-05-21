@@ -1,6 +1,7 @@
 import requests
 import json
 
+# 测试李宁官网搜索 API 的可用性及其返回的数据结构
 def test_api():
     url = "https://api.store.lining.com/goodsg/v1/goods-jh-query/search/lining/list/page"
     headers = {

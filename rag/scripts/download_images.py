@@ -7,6 +7,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# 从 products.csv 中读取图片 URL 并批量下载到本地目录
 def download_images_from_csv(csv_path, output_dir):
     """
     读取 CSV 并将图片下载到本地
