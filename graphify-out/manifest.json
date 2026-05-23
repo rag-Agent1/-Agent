@@ -14,14 +14,119 @@
     "ast_hash": "bc243b39bd1983948a12cce68b519237",
     "semantic_hash": ""
   },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\db_client.py": {
+    "mtime": 1779368594.6283903,
+    "ast_hash": "75c82918918c590724f815fdf5eca064",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\embedding.py": {
+    "mtime": 1779538590.0535889,
+    "ast_hash": "76ff55040a33324cd4c461b4193b85c8",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\hybrid_search.py": {
+    "mtime": 1779537555.6098113,
+    "ast_hash": "7cf7bcddf6b3b8a65e22169805f95606",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\image_search.py": {
+    "mtime": 1779537544.1738758,
+    "ast_hash": "5669a20b93a917e38e4cf684e5f629ed",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\text_retrieval.py": {
+    "mtime": 1779537532.5501354,
+    "ast_hash": "baaac5e688bc2ea68fb83e44b93cec5a",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\augment_data.py": {
+    "mtime": 1779539725.9946444,
+    "ast_hash": "857453a90f92274c42bdc85b18357a05",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\clean_duplicates.py": {
+    "mtime": 1779540361.4910905,
+    "ast_hash": "7e63810f378c37f229ce0a03c8f4eb18",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\clean_non_shoes.py": {
+    "mtime": 1779541980.416864,
+    "ast_hash": "128bf5502e6fc0c6fbedfd11b5ae554b",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\clear_db.py": {
+    "mtime": 1779368594.6314135,
+    "ast_hash": "71460aad0cd564ce730e007a39883bb1",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\download_images.py": {
+    "mtime": 1779368594.6329446,
+    "ast_hash": "7f64e6f6e4014d13dacf3cc4182d0c6b",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\generate_csv.py": {
+    "mtime": 1779368594.6341202,
+    "ast_hash": "0251db219a47df359c0108a94b82a20d",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\ingest_data.py": {
+    "mtime": 1779539747.3947904,
+    "ast_hash": "a18c44d7b44af77c97e6d9fb5be02c36",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\inspect_page.py": {
+    "mtime": 1779368594.6363604,
+    "ast_hash": "0c27bd5fa8ab0ea59fe0a00b109d59bc",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\lining_scraper.py": {
+    "mtime": 1779539399.9315982,
+    "ast_hash": "5d9e98eb3a8b07c4332f7cd7a3695998",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\scrape_diverse.py": {
+    "mtime": 1779542682.9474747,
+    "ast_hash": "707523f58b38aebc57bbe3cf7b5bf6f0",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\test_hybrid_search.py": {
+    "mtime": 1779537576.7936783,
+    "ast_hash": "95e4b1a4829babe1cfd8696077f4dc05",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\test_lining_api.py": {
+    "mtime": 1779368594.6373646,
+    "ast_hash": "d46bac0d9f5c1da207d7fb2db370ae58",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\test_playwright.py": {
+    "mtime": 1779540809.1569376,
+    "ast_hash": "3277712c27efc15cd71f24e7db38d4d3",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\test_rag_image_search.py": {
+    "mtime": 1779368594.6394928,
+    "ast_hash": "d952cc21eb291a50e6289f20a13c4844",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\scripts\\update_specific_image.py": {
+    "mtime": 1779368594.6394928,
+    "ast_hash": "f542cd1277e3bc12e8b871d8437ec57a",
+    "semantic_hash": ""
+  },
   "D:\\Trae CN Work\\Rag-Agent\\AGENTS.md": {
-    "mtime": 1778844515.3846414,
+    "mtime": 1779368594.5994163,
     "ast_hash": "22e263ebb43e933f6bc6423bf78e892f",
     "semantic_hash": ""
   },
+  "D:\\Trae CN Work\\Rag-Agent\\GIT_GUIDE.md": {
+    "mtime": 1779355380.7019868,
+    "ast_hash": "a1b31565b85a697dbab0ccff47d36c03",
+    "semantic_hash": ""
+  },
   "D:\\Trae CN Work\\Rag-Agent\\README.md": {
-    "mtime": 1778750809.9419587,
-    "ast_hash": "1d18456887b2764c7e4bcf58f58b0ad2",
+    "mtime": 1779537510.8435178,
+    "ast_hash": "34f38275ef990f93150b478970b86a3b",
     "semantic_hash": ""
   },
   "D:\\Trae CN Work\\Rag-Agent\\android\\02-API\u63a5\u53e3\u6587\u6863.md": {
@@ -65,8 +170,163 @@
     "semantic_hash": ""
   },
   "D:\\Trae CN Work\\Rag-Agent\\rag\\01-RAG\u6a21\u5757\u5bf9\u63a5\u63a5\u53e3.md": {
-    "mtime": 1778842448.2717462,
-    "ast_hash": "135b6e5580dd552d0d692b96c15e2bd4",
+    "mtime": 1779428424.5399258,
+    "ast_hash": "97f2de6ebec338e2a09ba35e36a8e72a",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\RAG_DEVELOPMENT_GUIDE.md": {
+    "mtime": 1779542925.517632,
+    "ast_hash": "d87f0492fd60ce07b6c5ff9a7c23721f",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_001.jpg": {
+    "mtime": 1779540994.9837008,
+    "ast_hash": "d38c0f03447364d91d524dad7ca6dcae",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_002.jpg": {
+    "mtime": 1779540995.8624878,
+    "ast_hash": "7d4817048a0556a84e6c807481f00baf",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_003.jpg": {
+    "mtime": 1779540997.74611,
+    "ast_hash": "e619ba6ddeb149abf5f352b50eb8a432",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_004.jpg": {
+    "mtime": 1779540998.546447,
+    "ast_hash": "ba5b4b0146306f5e742ef5b359225135",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_005.jpg": {
+    "mtime": 1779540999.2026956,
+    "ast_hash": "91817c01764f06c93bc3d603909d605f",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_006.jpg": {
+    "mtime": 1779541001.0765579,
+    "ast_hash": "c450bc32d1ad3708ab5a5a8223f43d28",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_007.jpg": {
+    "mtime": 1779541001.7637334,
+    "ast_hash": "b7fd519f2d96c1ab66f62307326835fa",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_009.jpg": {
+    "mtime": 1779541004.9587276,
+    "ast_hash": "a8bc4610ba8650271f2925aea8cdda5c",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_010.jpg": {
+    "mtime": 1779541005.707266,
+    "ast_hash": "ec425a0f81254daa5a6fee050543f73d",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_011.jpg": {
+    "mtime": 1779541006.6811686,
+    "ast_hash": "40e52ed321815880fe743f5acf21a448",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_013.jpg": {
+    "mtime": 1779541009.799453,
+    "ast_hash": "9534daf99a14c03abca8015cf344db50",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_014.jpg": {
+    "mtime": 1779541010.6635494,
+    "ast_hash": "2776eceb8835a120bc875da8a66f810a",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_015.jpg": {
+    "mtime": 1779541011.999284,
+    "ast_hash": "17d41bb15936dccea5e21fd7047571e4",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_016.jpg": {
+    "mtime": 1779541014.2464921,
+    "ast_hash": "88f8532dbbb88080a7e429d341a977b0",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_017.jpg": {
+    "mtime": 1779541016.1819398,
+    "ast_hash": "3b1cc3ffe649579b6d3138497563e512",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_018.jpg": {
+    "mtime": 1779541017.1184156,
+    "ast_hash": "1372c7d4f233cea0f9ef921a0f986dc4",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_019.jpg": {
+    "mtime": 1779541018.0550375,
+    "ast_hash": "685666677d7ec25e5e0b29807fe08211",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_020.jpg": {
+    "mtime": 1779541019.2031412,
+    "ast_hash": "46d77557d95abd73327584177090b4b4",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_021.jpg": {
+    "mtime": 1779541022.1113093,
+    "ast_hash": "4ec44db741de8be6bbcfb4c7da5eaff9",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_022.jpg": {
+    "mtime": 1779541024.5280304,
+    "ast_hash": "4a974189a2fa256f1a9a9ea862742ab8",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_023.jpg": {
+    "mtime": 1779541025.7376,
+    "ast_hash": "be9c77955c8e5dfb79c7eea2b0bc693c",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_024.jpg": {
+    "mtime": 1779541027.0901248,
+    "ast_hash": "015aeaef532b47ae7f13133c3164c087",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_025.jpg": {
+    "mtime": 1779541028.8978908,
+    "ast_hash": "95978c289ef2ca21561f301fd8fd7bb8",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_026.jpg": {
+    "mtime": 1779541038.995016,
+    "ast_hash": "5fda0ff92201c5b1223d05aff281e524",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_027.jpg": {
+    "mtime": 1779541040.6860385,
+    "ast_hash": "030a6b941d69e477b38eb390d567401e",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_030.jpg": {
+    "mtime": 1779542175.4641328,
+    "ast_hash": "38afb269de8e9a955de31ec3d6714a84",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_031.jpg": {
+    "mtime": 1779542628.9540386,
+    "ast_hash": "71a36df903a806a1aff1d825bad2c654",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_033.jpg": {
+    "mtime": 1779541853.4646282,
+    "ast_hash": "8051a03f1ca2031a7512846122f33171",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\images\\lining_050.jpg": {
+    "mtime": 1779541946.3458054,
+    "ast_hash": "084f6efae000fdf59ab52811be9c2870",
+    "semantic_hash": ""
+  },
+  "D:\\Trae CN Work\\Rag-Agent\\rag\\data\\test-images\\lining01.webp": {
+    "mtime": 1779285171.8529048,
+    "ast_hash": "aae7db1e975f86edb110e47bee1d93c2",
     "semantic_hash": ""
   }
 }
