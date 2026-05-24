@@ -55,7 +55,7 @@ data/
 #skills
 AGENTS.md
 #skills相关的文件
-graphify-out
+graphify-out/
 .env
 # 团队教程（本地参考，不提交到远程）
 教程/
