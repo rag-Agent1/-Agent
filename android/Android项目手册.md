@@ -15,7 +15,7 @@
 | Material 3 | Material Design 3 |
 | Retrofit + OkHttp | HTTP / SSE 流式通信 |
 | Coil | 异步图片加载 |
-| CameraX + PhotoPicker | 相机拍照 + 相册选图 |
+| GetContent + TakePicture | 相册选图 + 相机拍照 |
 | DataStore | 本地会话持久化 |
 | Coroutines + Flow | 异步 & 响应式状态管理 |
 
@@ -80,13 +80,17 @@ android/
 
 | 工具 | 版本 |
 |------|------|
-| Android Studio | Ladybug 或更新 |
-| Gradle | 8.12 |
+| Android Studio | Ladybug 2024.3+ |
+| Gradle | 8.9 |
 | AGP | 8.7.3 |
-| Kotlin | 2.1.0 |
-| Compose BOM | 2026.03.00 |
+| Kotlin | 2.0.21 |
+| Compose BOM | 2024.12.01 |
 | Min SDK | 26（Android 8.0） |
 | Target SDK | 36（Android 16） |
+
+> Gradle 使用腾讯镜像加速下载：`https://mirrors.cloud.tencent.com/gradle/gradle-8.9-bin.zip`
+>
+> Maven 依赖使用阿里云镜像：`https://maven.aliyun.com/repository/public`
 
 ---
 
@@ -184,21 +188,20 @@ Android                              Backend
 - [x] 所有数据模型定义
 
 ### Phase 2：核心功能
-- [x] 聊天界面（消息列表 + 输入框 + 发送按钮）
+- [x] 聊天界面（消息列表 + 输入框 + 发送/重试/停止）
 - [x] 图片采集（相机拍照 + 相册选图 + 权限适配）
 - [x] 图片压缩（最长边 ≤ 1920px，质量 ≤ 4MB）
-- [x] 图片上传（进度条 + 失败重试）
+- [x] 图片上传（进度条 + 失败重试按钮）
 - [x] SSE 流式渲染（卡片 → 文本 → 引用 → 结束）
-- [x] 候选商品卡片（横滑 + 相似度标签 + 详情 BottomSheet）
+- [x] 候选商品卡片（横滑 + 相似度标签 + 骨架屏占位 + 详情 BottomSheet）
 - [x] 引用展示（折叠/展开）
 
 ### Phase 3：体验增强
-- [x] 澄清交互（AI 提问 → 用户输入 → 重新检索）
-- [x] 停止生成（中断 SSE 流）
-- [x] 异常兜底（网络错误 / 超时 / 后端报错）
+- [x] 停止生成（撤回对话、图片回待发送区、无弹窗）
+- [x] 异常兜底（弱网/超时/后端报错/图片不合规，友好提示+重试按钮）
+- [x] 自动健康检查（每 30 秒检测，绿/红指示灯）
 - [x] 会话管理（新建 / 续对话 / 30 分钟超时提示）
 - [x] 会话持久化（DataStore 存储 session_id）
-- [x] 健康检查（TopAppBar 连接状态灯）
 - [x] 环境切换（设置页动态切换后端地址）
 
 ---
@@ -207,11 +210,11 @@ Android                              Backend
 
 | 依赖 | 版本 | 用途 |
 |------|------|------|
-| androidx.compose:compose-bom | 2026.03.00 | Compose UI 框架 |
+| androidx.compose:compose-bom | 2024.12.01 | Compose UI 框架 |
 | com.squareup.retrofit2:retrofit | 2.11.0 | HTTP 请求 |
 | com.squareup.okhttp3:okhttp-sse | 4.12.0 | SSE 流式解析 |
 | io.coil-kt:coil-compose | 2.7.0 | 图片加载 |
-| androidx.camera:camera-camera2 | 1.5.0-alpha06 | 相机拍照 |
+| androidx.activity:activity-compose | 1.10.0 | GetContent 相册选图 + TakePicture 拍照 |
 | androidx.datastore:datastore-preferences | 1.1.3 | 键值持久化 |
 
 完整依赖清单见 `gradle/libs.versions.toml`。
