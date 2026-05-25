@@ -1,3 +1,8 @@
+import os
+
+# 解决国内下载 Hugging Face 模型慢或失败的问题
+os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+
 import torch
 from PIL import Image
 import io
@@ -9,11 +14,13 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class EmbeddingEngine:
     """
     RAG 模块核心模型引擎
     负责加载 CLIP 和 BGE-M3 模型并执行推理
     """
+
     _instance = None
 
     def __new__(cls):
@@ -27,19 +34,19 @@ class EmbeddingEngine:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         if torch.backends.mps.is_available():
             self.device = "mps"
-        
+
         logger.info(f"正在加载模型至设备: {self.device}")
 
         try:
             # 1. 加载 CLIP 模型 (用于以图搜图，512维)
             # 使用 sentence-transformers 包装的 CLIP 更加轻量且易用
-            self.clip_model = SentenceTransformer('clip-ViT-B-32', device=self.device)
+            self.clip_model = SentenceTransformer("clip-ViT-B-32", device=self.device)
             logger.info("CLIP 模型加载成功 (512d)")
 
             # 2. 加载 BGE-M3 模型 (用于文本检索，1024维)
-            self.bge_model = SentenceTransformer('BAAI/bge-m3', device=self.device)
+            self.bge_model = SentenceTransformer("BAAI/bge-m3", device=self.device)
             logger.info("BGE-M3 模型加载成功 (1024d)")
-            
+
         except Exception as e:
             logger.error(f"模型加载失败: {str(e)}")
             raise e
@@ -69,9 +76,11 @@ class EmbeddingEngine:
             logger.error(f"文本向量化失败: {str(e)}")
             return []
 
+
 # --- 对外暴露的接口 (单例模式) ---
 
 _engine = None
+
 
 def get_engine():
     global _engine
@@ -79,11 +88,14 @@ def get_engine():
         _engine = EmbeddingEngine()
     return _engine
 
+
 def embed_image(image_bytes: bytes) -> List[float]:
     return get_engine().embed_image(image_bytes)
 
+
 def embed_text(text: str) -> List[float]:
     return get_engine().embed_text(text)
+
 
 # 测试代码
 if __name__ == "__main__":

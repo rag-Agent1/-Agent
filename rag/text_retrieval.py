@@ -1,39 +1,22 @@
-from dataclasses import dataclass
 from typing import List, Optional
 import logging
 from rag.db_client import get_qdrant_client
 from qdrant_client.models import Filter, FieldCondition, MatchValue
+from rag.image_search import SearchResult
 
 # 配置日志
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class SearchResult:
-    """
-    检索结果数据类，严格遵循接口契约
-    """
-
-    product_id: str
-    name: str
-    price: float
-    description: str
-    category: str
-    image_url: Optional[str]
-    score: float  # 相似度分数
-    source: str  # "image" | "text" | "hybrid"
-    metadata: Optional[dict] = None  # 扩展字段
-
-
-def search_by_image(
-    image_embedding: List[float],
+def search_by_text(
+    text_embedding: List[float],
     top_k: int = 10,
-    score_threshold: float = 0.6,
+    score_threshold: float = 0.5,
     category_filter: Optional[str] = None,
 ) -> List[SearchResult]:
     """
-    以图搜图核心逻辑
-    输入: CLIP 图片向量
+    纯文本语义搜鞋逻辑
+    输入: BGE-M3 文本向量
     返回: 按相似度排序的商品列表
     """
     client = get_qdrant_client()
@@ -52,11 +35,11 @@ def search_by_image(
         # 执行向量搜索
         search_results = client.query_points(
             collection_name=collection_name,
-            query=image_embedding,
-            using="image",  # 指定查询 image 向量空间
+            query=text_embedding,
+            using="text",  # 指定查询 text 向量空间
             query_filter=query_filter,
             limit=top_k,
-            with_payload=True,  # 需要返回商品详细信息
+            with_payload=True,
             score_threshold=score_threshold,
         ).points
 
@@ -73,23 +56,21 @@ def search_by_image(
                     category=payload.get("category", ""),
                     image_url=payload.get("image_url"),
                     score=res.score,
-                    source="image",
+                    source="text",
                 )
             )
 
-        logger.info(f"以图搜图完成，找到 {len(results)} 个匹配项")
+        logger.info(f"文本检索完成，找到 {len(results)} 个匹配项")
         return results
 
     except Exception as e:
-        logger.error(f"以图搜图执行失败: {str(e)}")
+        logger.error(f"文本检索执行失败: {str(e)}")
         return []
 
 
 if __name__ == "__main__":
     # 模拟测试逻辑
-    print("正在测试以图搜图接口...")
-    # 实际测试需要先在数据库中插入数据，此处仅展示逻辑结构
-    # mock_vector = [0.1] * 512
-    # results = search_by_image(mock_vector)
+    print("正在测试文本检索接口...")
+    # results = search_by_text([0.1] * 1024)
     # for r in results:
     #     print(f"找到商品: {r.name}, 分数: {r.score}")

@@ -11,6 +11,7 @@ from rag.embedding import embed_text, embed_image
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # 根据输入字符串生成确定性的 UUID，确保多次运行脚本时同一个商品对应同一个 ID
 def generate_deterministic_uuid(input_str: str) -> str:
     """
@@ -18,6 +19,7 @@ def generate_deterministic_uuid(input_str: str) -> str:
     确保多次运行脚本时同一个商品对应同一个 ID，避免重复插入
     """
     return str(uuid.uuid5(uuid.NAMESPACE_DNS, input_str))
+
 
 def ingest_data(csv_path: str, local_img_dir: str = "rag/data/images"):
     """
@@ -32,14 +34,14 @@ def ingest_data(csv_path: str, local_img_dir: str = "rag/data/images"):
         return
 
     points = []
-    with open(csv_path, mode='r', encoding='utf-8-sig') as f:
+    with open(csv_path, mode="r", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            product_id_raw = row['product_id']
-            name = row['name']
-            description = row['description']
-            image_url = row['image_url']
-            
+            product_id_raw = row["product_id"]
+            name = row["name"]
+            description = row["description"]
+            image_url = row["image_url"]
+
             logger.info(f"正在处理商品: {name} ({product_id_raw})")
 
             # Qdrant 强制要求 ID 为无符号整数或 UUID
@@ -50,49 +52,43 @@ def ingest_data(csv_path: str, local_img_dir: str = "rag/data/images"):
             text_to_embed = f"{name}: {description}"
             text_vector = embed_text(text_to_embed)
 
-            # 2. 图片向量化
+            # 2. 图片向量化 (优先使用本地已下载的图片)
             image_vector = []
+            local_img_path = os.path.join(local_img_dir, f"{product_id_raw}.jpg")
+
             try:
-                if image_url.startswith("http"):
-                    # 下载远程图片
+                if os.path.exists(local_img_path):
+                    logger.info(f"使用本地图片: {local_img_path}")
+                    with open(local_img_path, "rb") as img_file:
+                        image_vector = embed_image(img_file.read())
+                elif image_url.startswith("http"):
+                    # 如果本地没有，再尝试下载
+                    logger.info(f"本地无图片，尝试从 URL 下载: {image_url}")
                     response = requests.get(image_url, timeout=10)
                     if response.status_code == 200:
                         image_vector = embed_image(response.content)
                     else:
-                        logger.warning(f"图片下载失败 (状态码 {response.status_code}): {image_url}")
-                elif image_url.startswith("local://"):
-                    # 读取本地图片
-                    local_filename = image_url.replace("local://", "")
-                    local_path = os.path.join(local_img_dir, local_filename)
-                    if os.path.exists(local_path):
-                        with open(local_path, "rb") as img_file:
-                            image_vector = embed_image(img_file.read())
-                    else:
-                        logger.warning(f"本地图片不存在: {local_path}")
+                        logger.warning(
+                            f"图片下载失败 (状态码 {response.status_code}): {image_url}"
+                        )
             except Exception as e:
-                logger.warning(f"图片向量化失败: {image_url}, 错误: {str(e)}")
+                logger.warning(f"图片向量化失败: {product_id_raw}, 错误: {str(e)}")
 
             # 3. 构造 Qdrant Point
             vectors = {"text": text_vector}
             if image_vector:
                 vectors["image"] = image_vector
 
-            points.append(PointStruct(
-                id=point_id, 
-                vector=vectors,
-                payload=row
-            ))
+            points.append(PointStruct(id=point_id, vector=vectors, payload=row))
 
     # 批量上传
     if points:
         try:
-            client.upsert(
-                collection_name=collection_name,
-                points=points
-            )
+            client.upsert(collection_name=collection_name, points=points)
             logger.info(f"成功导入 {len(points)} 条数据至 Qdrant Cloud!")
         except Exception as e:
             logger.error(f"批量导入失败: {str(e)}")
+
 
 if __name__ == "__main__":
     csv_file = "rag/data/products.csv"
