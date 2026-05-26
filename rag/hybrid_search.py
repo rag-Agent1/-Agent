@@ -40,12 +40,15 @@ def hybrid_search(
     # 2. RRF 融合逻辑
     scores: Dict[str, float] = {}
     products: Dict[str, SearchResult] = {}
+    is_confident: Dict[str, bool] = {}  # 记录该商品是否在任一路检索中是置信的
 
     # 处理图像结果
     for rank, res in enumerate(image_results, start=1):
         pid = res.product_id
         scores[pid] = scores.get(pid, 0.0) + 1.0 / (rrf_k + rank)
         products[pid] = res
+        if not res.need_clarify:
+            is_confident[pid] = True
 
     # 处理文本结果
     for rank, res in enumerate(text_results, start=1):
@@ -54,6 +57,8 @@ def hybrid_search(
         # 如果产品已存在，保持原引用或合并信息
         if pid not in products:
             products[pid] = res
+        if not res.need_clarify:
+            is_confident[pid] = True
 
     # 3. 重新排序
     sorted_pids = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
@@ -64,6 +69,8 @@ def hybrid_search(
         # 更新为融合后的分数和来源
         res.score = scores[pid]
         res.source = "hybrid"
+        # 如果该商品在任何一路中都不置信，则标记为需要澄清
+        res.need_clarify = not is_confident.get(pid, False)
         final_results.append(res)
 
     logger.info(f"混合搜索完成，融合后返回 {len(final_results)} 个结果")
