@@ -48,6 +48,10 @@ build/
 data/
 !data/.gitkeep
 
+# Android data/ package (not Docker data)
+!android/**/data/
+!android/**/data/**/
+
 # Environment
 .env
 **/application-local.yml
