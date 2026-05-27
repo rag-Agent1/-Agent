@@ -3,29 +3,57 @@ import csv
 import requests
 import logging
 import uuid
+import re
+from typing import Dict, List
 from qdrant_client.models import PointStruct
 from rag.db_client import get_qdrant_client
 from rag.embedding import embed_text, embed_image
+# 延迟导入并添加模块路径处理，解决导入错误问题
+def refine_knowledge_base():
+    from rag.scripts.refine_knowledge_base import refine_knowledge_base as _refine
+    return _refine()
 
 # 配置日志
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-
-# 根据输入字符串生成确定性的 UUID，确保多次运行脚本时同一个商品对应同一个 ID
 def generate_deterministic_uuid(input_str: str) -> str:
-    """
-    根据输入字符串生成确定性的 UUID
-    确保多次运行脚本时同一个商品对应同一个 ID，避免重复插入
-    """
+    """根据输入字符串生成确定性的 UUID"""
     return str(uuid.uuid5(uuid.NAMESPACE_DNS, input_str))
 
+def extract_attrs(description: str) -> Dict:
+    """从描述中提取结构化属性字典"""
+    attrs = {
+        "brand": "李宁",
+        "color": "未知",
+        "techs": []
+    }
+    
+    # 提取颜色
+    color_match = re.search(r"【颜色信息】(.*?)[。|；|!|?|$]", description)
+    if color_match:
+        attrs["color"] = color_match.group(1).strip()
+    
+    # 提取科技标签
+    tech_matches = re.findall(r"【(.*?)】", description)
+    for tech in tech_matches:
+        if tech not in ["颜色信息", "性能卖点", "核心科技", "商品详情"]:
+            attrs["techs"].append(tech)
+            
+    # 如果核心科技标签里有内容，也加入 techs
+    core_tech_match = re.search(r"【核心科技】(.*?)[。|；|!|?|$]", description)
+    if core_tech_match:
+        techs_str = core_tech_match.group(1)
+        # 拆分多个科技
+        for t in re.split(r"、|，|,", techs_str):
+            t = t.strip()
+            if t and t not in attrs["techs"]:
+                attrs["techs"].append(t)
+                
+    return attrs
 
 def ingest_data(csv_path: str, local_img_dir: str = "rag/data/images"):
-    """
-    从 CSV 读取数据，向量化并导入 Qdrant
-    支持 HTTP URL 和 local:// 协议的本地图片
-    """
+    """从 CSV 读取数据，向量化并导入 Qdrant"""
     client = get_qdrant_client()
     collection_name = "products"
 
@@ -42,39 +70,33 @@ def ingest_data(csv_path: str, local_img_dir: str = "rag/data/images"):
             description = row["description"]
             image_url = row["image_url"]
 
-            logger.info(f"正在处理商品: {name} ({product_id_raw})")
+            logger.info(f"正在向量化商品: {name} ({product_id_raw})")
 
-            # Qdrant 强制要求 ID 为无符号整数或 UUID
-            # 我们将 phone_001 转换为 UUID
             point_id = generate_deterministic_uuid(product_id_raw)
 
-            # 1. 文本向量化 (Name + Description)
+            # 1. 文本向量化
             text_to_embed = f"{name}: {description}"
             text_vector = embed_text(text_to_embed)
 
-            # 2. 图片向量化 (优先使用本地已下载的图片)
+            # 2. 图片向量化
             image_vector = []
             local_img_path = os.path.join(local_img_dir, f"{product_id_raw}.jpg")
 
             try:
                 if os.path.exists(local_img_path):
-                    logger.info(f"使用本地图片: {local_img_path}")
                     with open(local_img_path, "rb") as img_file:
                         image_vector = embed_image(img_file.read())
                 elif image_url.startswith("http"):
-                    # 如果本地没有，再尝试下载
-                    logger.info(f"本地无图片，尝试从 URL 下载: {image_url}")
                     response = requests.get(image_url, timeout=10)
                     if response.status_code == 200:
                         image_vector = embed_image(response.content)
-                    else:
-                        logger.warning(
-                            f"图片下载失败 (状态码 {response.status_code}): {image_url}"
-                        )
             except Exception as e:
                 logger.warning(f"图片向量化失败: {product_id_raw}, 错误: {str(e)}")
 
-            # 3. 构造 Qdrant Point
+            # 3. 提取属性字典
+            row["attrs"] = extract_attrs(description)
+
+            # 4. 构造 Qdrant Point
             vectors = {"text": text_vector}
             if image_vector:
                 vectors["image"] = image_vector
@@ -84,12 +106,23 @@ def ingest_data(csv_path: str, local_img_dir: str = "rag/data/images"):
     # 批量上传
     if points:
         try:
-            client.upsert(collection_name=collection_name, points=points)
-            logger.info(f"成功导入 {len(points)} 条数据至 Qdrant Cloud!")
+            # 分批上传以防 OOM 或超时 (每批 20 条)
+            batch_size = 20
+            for i in range(0, len(points), batch_size):
+                batch = points[i:i + batch_size]
+                client.upsert(collection_name=collection_name, points=batch)
+                logger.info(f"已上传第 {i//batch_size + 1} 批数据 ({len(batch)} 条)")
+            
+            logger.info(f"成功同步 {len(points)} 条商品数据至 Qdrant!")
+            
+            # 5. 自动触发知识库精细化处理 (Citations)
+            logger.info("开始执行知识库精细化处理...")
+            refine_knowledge_base()
+            
         except Exception as e:
-            logger.error(f"批量导入失败: {str(e)}")
-
+            logger.error(f"同步失败: {str(e)}")
 
 if __name__ == "__main__":
+    # 确保 PYTHONPATH 正确
     csv_file = "rag/data/products.csv"
     ingest_data(csv_file)

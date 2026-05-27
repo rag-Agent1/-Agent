@@ -22,6 +22,7 @@ class SearchResult:
     image_url: Optional[str]
     score: float  # 相似度分数
     source: str  # "image" | "text" | "hybrid"
+    need_clarify: bool = False  # 是否需要澄清 (当 score < 0.6 时为 True)
     metadata: Optional[dict] = None  # 扩展字段
 
 
@@ -74,6 +75,7 @@ def search_by_image(
                     image_url=payload.get("image_url"),
                     score=res.score,
                     source="image",
+                    need_clarify=res.score < 0.6,
                 )
             )
 
