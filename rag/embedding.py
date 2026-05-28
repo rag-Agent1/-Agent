@@ -19,6 +19,7 @@ class EmbeddingEngine:
     """
     RAG 模块核心模型引擎
     负责加载 CLIP 和 BGE-M3 模型并执行推理
+    BGE-M3 延迟加载（首次 embed_text 时初始化）
     """
 
     _instance = None
@@ -30,26 +31,25 @@ class EmbeddingEngine:
         return cls._instance
 
     def _init_models(self):
-        # 自动选择设备: GPU (cuda) > Mac GPU (mps) > CPU
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         if torch.backends.mps.is_available():
             self.device = "mps"
 
-        logger.info(f"正在加载模型至设备: {self.device}")
+        logger.info(f"正在加载 CLIP 模型至设备: {self.device}")
 
         try:
-            # 1. 加载 CLIP 模型 (用于以图搜图，512维)
-            # 使用 sentence-transformers 包装的 CLIP 更加轻量且易用
             self.clip_model = SentenceTransformer("clip-ViT-B-32", device=self.device)
             logger.info("CLIP 模型加载成功 (512d)")
+            self.bge_model = None
+        except Exception as e:
+            logger.error(f"CLIP 模型加载失败: {str(e)}")
+            raise e
 
-            # 2. 加载 BGE-M3 模型 (用于文本检索，1024维)
+    def _ensure_bge(self):
+        if self.bge_model is None:
+            logger.info(f"正在加载 BGE-M3 模型至设备: {self.device} (首次)")
             self.bge_model = SentenceTransformer("BAAI/bge-m3", device=self.device)
             logger.info("BGE-M3 模型加载成功 (1024d)")
-
-        except Exception as e:
-            logger.error(f"模型加载失败: {str(e)}")
-            raise e
 
     def embed_image(self, image_bytes: bytes) -> List[float]:
         """
@@ -69,7 +69,7 @@ class EmbeddingEngine:
         将文本转为 1024 维向量
         """
         try:
-            # BGE-M3 在推理时建议不加指令或按需加指令，此处使用默认模式
+            self._ensure_bge()
             embedding = self.bge_model.encode(text, normalize_embeddings=True)
             return embedding.tolist()
         except Exception as e:

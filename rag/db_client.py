@@ -4,8 +4,8 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance
 from dotenv import load_dotenv
 
-# 加载环境变量
-load_dotenv()
+# 加载环境变量（不覆盖已在 main.py 中加载的值）
+load_dotenv(override=False)
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
