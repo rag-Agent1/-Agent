@@ -7,9 +7,9 @@
 ## 1. 项目进度状态 (Project Status)
 
 **扫描日期**: 2026-06-02  
-**当前结论**: RAG 最小闭环已经完成，包含商品数据采集、向量化入库、图像检索、文本检索、RRF 混合检索、引用片段检索、自动评测与压测脚本。下一阶段重点是后端联调、接口契约收敛、图片资产补齐与生产级评测复现。
+**当前结论**: RAG 最小闭环已经完成，包含商品数据采集、向量化入库、图像检索、文本检索、RRF 混合检索、引用片段检索、自动评测与压测脚本。下方进度按职责边界拆分：RAG 模块只对检索能力、知识库、向量库、评测脚本和 Python import 接口负责；后端编排、Android 交互和端到端联调属于跨模块协作或其他模块主责。
 
-### ✅ 已完成任务 (Completed)
+### ✅ 已完成任务 (RAG 主责)
 - [x] **环境与依赖基础**: 已建立 Python RAG 模块，核心依赖覆盖 Torch、SentenceTransformers、CLIP、BGE-M3、Qdrant、Playwright、Pillow 等。
 - [x] **向量数据库连接**: `db_client.py` 支持优先连接 Qdrant Cloud，也支持本地 Qdrant fallback；`products` 集合配置 `text`(1024d) 与 `image`(512d) named vectors。
 - [x] **Embedding 引擎**: `embedding.py` 以单例方式加载 CLIP `clip-ViT-B-32`，BGE-M3 `BAAI/bge-m3` 采用首次文本向量化时延迟加载，并暴露 `embed_image` / `embed_text`。
@@ -27,20 +27,23 @@
 - [x] **压测脚本**: `stress_test.py` 支持并发用户数 1/3/5 的混合检索压测，并输出成功率、TPS、P50/P90/P95。
 - [x] **功能测试脚本**: 已提供 `test_rag_image_search.py`、`test_hybrid_search.py`、`test_lining_api.py`、`test_playwright.py` 等脚本。
 
-### 🟡 进行中 / 需复核任务 (In Progress / Needs Review)
-- [ ] **后端联调复核**: 使用 `backend` 实际调用链验证 `embed_*`、`search_by_*`、`hybrid_search`、citations 返回结构是否完全满足后端 prompt 组装需求。
-- [ ] **接口契约收敛**: `01-RAG模块对接接口.md` 仍描述 `hybrid_search` 位于 `text_retrieval.py`，当前实际实现位于 `hybrid_search.py`；需要同步接口文档或增加 re-export。
-- [ ] **Reranker 决策**: 接口文档确认项写明 Cross-Encoder `reranker.py` “必须包含”，但当前模块尚未实现；需要决定是补齐 reranker，还是正式降级为 RRF-only。
-- [ ] **图片资产补齐**: 当前本地图片 33 张，少于 105 条商品记录；若生产检索需要完整图像向量，应补齐图片或确认远程 `image_url` 入库策略。
-- [ ] **评测结果复现记录**: 文档中历史指标为 Top-1 > 85%、Top-3 100%、P95 315.2ms，但本次只扫描到评测脚本，未重新执行评测；需要保存最新评测日志或报告。
-- [ ] **Qdrant 集合初始化覆盖**: `db_client.py` 只初始化 `products` 集合；`citations` 集合的向量配置需要确认由外部预创建，或补充初始化逻辑。
-- [ ] **路径硬编码治理**: 多个脚本仍使用 `BASE_DIR = r"d:\Trae CN Work\Rag-Agent"`，后续需要改为基于项目根目录或环境变量解析。
+### 🟡 进行中 / 需复核任务 (RAG 主责)
+- [ ] **接口导出收敛**: `01-RAG模块对接接口.md` 仍描述 `hybrid_search` 位于 `text_retrieval.py`，当前实际实现位于 `hybrid_search.py`；RAG 侧需要统一最终 import 入口，或在文档中明确实际入口。
+- [ ] **Reranker 决策**: 接口文档确认项写明 Cross-Encoder `reranker.py` “必须包含”，但当前模块尚未实现；RAG 侧需要决定是补齐 reranker，还是正式降级为 RRF-only。
+- [ ] **图片资产补齐**: 当前本地图片 33 张，少于 105 条商品记录；若生产检索需要完整图像向量，RAG 侧应补齐图片或确认远程 `image_url` 入库策略。
+- [ ] **评测结果复现记录**: 文档中历史指标为 Top-1 > 85%、Top-3 100%、P95 315.2ms，但本次只扫描到评测脚本，未重新执行评测；RAG 侧需要保存最新评测日志或报告。
+- [ ] **Qdrant 集合初始化覆盖**: `db_client.py` 只初始化 `products` 集合；RAG 侧需要确认 `citations` 集合由外部预创建，或补充初始化逻辑。
+- [ ] **路径硬编码治理**: 多个 RAG 脚本仍使用 `BASE_DIR = r"d:\Trae CN Work\Rag-Agent"`，后续需要改为基于项目根目录或环境变量解析。
+- [ ] **检索策略迭代**: RAG 侧根据真实用户查询、后端联调反馈和评测结果，调优 query 拼接、阈值、Top-K、RRF 参数或 reranker。
+- [ ] **知识库更新流程固化**: RAG 侧明确采集、清洗、图片下载、入库、citations 精细化、评测、压测的发布顺序和验收标准。
 
-### ⏳ 待完成任务 (Pending)
-- [ ] **生产级后端联调**: 完成 Android → backend → RAG → DeepSeek prompt 组装的端到端验收。
-- [ ] **异常与超时保护**: 为后端调用 RAG 的同步阻塞函数补充超时、降级和错误隔离策略。
-- [ ] **检索策略迭代**: 根据真实用户查询、后端联调反馈和评测结果，调优 query 拼接、阈值、Top-K、RRF 参数或 reranker。
-- [ ] **知识库更新流程固化**: 明确采集、清洗、图片下载、入库、citations 精细化、评测、压测的发布顺序和验收标准。
+### 🤝 协作任务 (RAG 参与，非 RAG 单独负责)
+- [ ] **后端联调复核**: 后端主责调用链和 prompt 组装，RAG 负责确认 `embed_*`、`search_by_*`、`hybrid_search`、citations 的输入输出结构和异常表现。
+- [ ] **生产级端到端验收**: Android、后端、RAG 共同完成 Android → backend → RAG → DeepSeek 的端到端验收；RAG 只负责检索结果质量和引用依据正确性。
+- [ ] **接口契约同步**: 后端与 RAG 共同维护 `01-RAG模块对接接口.md`；RAG 负责提供真实函数签名、返回字段和阈值策略，后端负责调用方式、超时和编排约束。
+
+### 🔎 非 RAG 主责但需关注
+- [ ] **异常与超时保护**: 后端主责。RAG 需要保证函数异常可捕获、返回结构稳定，并提供建议超时时间；具体 `asyncio.to_thread`、降级策略和 API 错误隔离由后端实现。
 
 ---
 
