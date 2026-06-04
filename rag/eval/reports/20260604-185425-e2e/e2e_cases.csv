@@ -1,0 +1,4 @@
+﻿test_id,mode,status,latency_ms,answer_text,answer_length,need_clarify,clarify_question,final_event_received,candidates_count,citations_count,candidate_hit,citation_hit,citation_consistency,answer_useful,keyword_hit_rate,should_clarify,clarify_correct,difficulty,scenario,category,note
+e2e-001,api,ok,34206.85420000518,未找到匹配的商品，请尝试其他图片。,17,False,,True,0,0,False,False,False,False,0.0,False,True,medium,同款识别,运动/鞋类/羽毛球鞋,
+e2e-002,api,ok,51.056700001936406,未找到匹配的商品，请尝试其他图片。,17,False,,True,0,0,False,False,False,False,0.0,False,True,easy,近似替代,运动/鞋类/羽毛球鞋,
+e2e-003,api,ok,25.45549999922514,未找到匹配的商品，请尝试其他图片。,17,False,,True,0,0,False,False,False,False,0.0,False,True,medium,知识问答,运动/鞋类/羽毛球鞋,

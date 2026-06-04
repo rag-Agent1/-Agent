@@ -1,0 +1,268 @@
+{
+  "run_id": "20260604-190044",
+  "dataset_path": "D:\\Trae CN Work\\Rag-Agent\\rag\\eval\\datasets\\rag_eval_dataset.jsonl",
+  "dataset_size": 5,
+  "top_k": 5,
+  "started_at": "2026-06-04T19:00:44.766997+08:00",
+  "modes": {
+    "text": {
+      "total_cases": 5,
+      "executed_cases": 5,
+      "skipped_cases": 0,
+      "status_breakdown": {
+        "ok": 5
+      },
+      "metrics": {
+        "top1": 0.0,
+        "top3": 0.2,
+        "recall_at_k": 0.4,
+        "mrr": 0.1167,
+        "clarify_rate": 0.0,
+        "citation_consistency": 0.2,
+        "latency_ms_p50": 204.001,
+        "latency_ms_p95": 1169.574,
+        "latency_ms_avg": 444.955
+      },
+      "clarify_confusion": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "segments": {
+        "scenario": {
+          "同款识别": {
+            "cases": 1,
+            "top1": 0.0,
+            "top3": 0.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 1410.795
+          },
+          "知识问答": {
+            "cases": 1,
+            "top1": 0.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 202.42
+          },
+          "近似替代": {
+            "cases": 2,
+            "top1": 0.0,
+            "top3": 0.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 203.945
+          },
+          "低置信澄清": {
+            "cases": 1,
+            "top1": 0.0,
+            "top3": 0.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 204.688
+          }
+        },
+        "difficulty": {
+          "medium": {
+            "cases": 2,
+            "top1": 0.0,
+            "top3": 0.5,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 1350.377
+          },
+          "easy": {
+            "cases": 2,
+            "top1": 0.0,
+            "top3": 0.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 203.945
+          },
+          "hard": {
+            "cases": 1,
+            "top1": 0.0,
+            "top3": 0.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 204.688
+          }
+        },
+        "category": {
+          "运动/鞋类/羽毛球鞋": {
+            "cases": 5,
+            "top1": 0.0,
+            "top3": 0.2,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 1169.574
+          }
+        }
+      }
+    },
+    "image": {
+      "total_cases": 5,
+      "executed_cases": 4,
+      "skipped_cases": 1,
+      "status_breakdown": {
+        "ok": 4,
+        "skipped": 1
+      },
+      "metrics": {
+        "top1": 1.0,
+        "top3": 1.0,
+        "recall_at_k": 0.75,
+        "mrr": 1.0,
+        "clarify_rate": 0.0,
+        "citation_consistency": 0.0,
+        "latency_ms_p50": 204.701,
+        "latency_ms_p95": 217.35,
+        "latency_ms_avg": 207.49
+      },
+      "clarify_confusion": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "segments": {
+        "scenario": {
+          "同款识别": {
+            "cases": 1,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 201.045
+          },
+          "知识问答": {
+            "cases": 1,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 219.514
+          },
+          "近似替代": {
+            "cases": 2,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 205.05
+          }
+        },
+        "difficulty": {
+          "medium": {
+            "cases": 2,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 218.59
+          },
+          "easy": {
+            "cases": 2,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 205.05
+          }
+        },
+        "category": {
+          "运动/鞋类/羽毛球鞋": {
+            "cases": 4,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 217.35
+          }
+        }
+      }
+    },
+    "hybrid": {
+      "total_cases": 5,
+      "executed_cases": 5,
+      "skipped_cases": 0,
+      "status_breakdown": {
+        "ok": 5
+      },
+      "metrics": {
+        "top1": 0.6,
+        "top3": 0.8,
+        "recall_at_k": 0.6,
+        "mrr": 0.7,
+        "clarify_rate": 0.0,
+        "citation_consistency": 0.8,
+        "latency_ms_p50": 414.117,
+        "latency_ms_p95": 481.622,
+        "latency_ms_avg": 391.109
+      },
+      "clarify_confusion": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "segments": {
+        "scenario": {
+          "同款识别": {
+            "cases": 1,
+            "top1": 0.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 496.101
+          },
+          "知识问答": {
+            "cases": 1,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 414.117
+          },
+          "近似替代": {
+            "cases": 2,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 423.041
+          },
+          "低置信澄清": {
+            "cases": 1,
+            "top1": 0.0,
+            "top3": 0.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 211.206
+          }
+        },
+        "difficulty": {
+          "medium": {
+            "cases": 2,
+            "top1": 0.5,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 492.002
+          },
+          "easy": {
+            "cases": 2,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 423.041
+          },
+          "hard": {
+            "cases": 1,
+            "top1": 0.0,
+            "top3": 0.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 211.206
+          }
+        },
+        "category": {
+          "运动/鞋类/羽毛球鞋": {
+            "cases": 5,
+            "top1": 0.6,
+            "top3": 0.8,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 481.622
+          }
+        }
+      }
+    }
+  },
+  "finished_at": "2026-06-04T19:01:34.242972+08:00",
+  "duration_seconds": 49.476
+}

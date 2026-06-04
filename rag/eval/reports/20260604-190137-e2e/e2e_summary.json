@@ -1,0 +1,21 @@
+{
+  "total_cases": 3,
+  "executed_cases": 3,
+  "status_breakdown": {
+    "ok": 3
+  },
+  "metrics": {
+    "candidate_hit_rate": 0.0,
+    "citation_consistency": 0.0,
+    "answer_usefulness": 0.0,
+    "clarify_accuracy": 1.0,
+    "keyword_hit_rate": 0.0,
+    "latency_ms_avg": 19.627,
+    "latency_ms_p95": 19.379
+  },
+  "run_id": "20260604-190137-e2e",
+  "mode": "api",
+  "dataset_path": "D:\\Trae CN Work\\Rag-Agent\\rag\\eval\\datasets\\rag_e2e_dataset.jsonl",
+  "started_at": "2026-06-04T19:01:38.942604+08:00",
+  "finished_at": "2026-06-04T19:01:38.942641+08:00"
+}

@@ -5,7 +5,7 @@ import logging
 from langchain_openai import ChatOpenAI
 
 from app.config import settings
-from app.agent.tools import REGISTRY, call_tool, get_openai_tools
+from app.agent.tools import call_tool, get_openai_tools
 
 logger = logging.getLogger(__name__)
 MAX_ITERATIONS = 5
@@ -71,7 +71,15 @@ async def react_loop(
             messages.append(tool_msg)
 
             result_data = json.loads(tool_result)
+            if name == "search_by_image":
+                await queue.put(("candidates", result_data.get("candidates", [])))
+
+            if name == "search_knowledge":
+                await queue.put(("citations", {"citations": result_data.get("citations", [])}))
+
             if name == "final_answer" and "answer" in result_data:
+                if result_data.get("citations"):
+                    await queue.put(("citations", {"citations": result_data.get("citations", [])}))
                 answer = result_data["answer"]
                 await queue.put(("delta", {"text": answer}))
                 full_response += answer
