@@ -196,3 +196,107 @@ def hybrid_search(
 ---
 
 *Last Updated: 2026-06-02*
+
+## 9. RAG Evaluation Runner
+
+`rag/scripts/evaluate_performance.py` now reads a fixed JSONL dataset instead of random product samples. The default dataset is:
+
+```text
+rag/eval/datasets/rag_eval_dataset.jsonl
+```
+
+Each case should contain:
+
+```json
+{
+  "test_id": "case-001",
+  "image_path": "rag/data/images/lining_001.jpg",
+  "query_text": "query text",
+  "gold_sku_id": "lining_001",
+  "gold_topk": ["lining_001"],
+  "should_clarify": false,
+  "expected_citations": ["lining_001"],
+  "difficulty": "medium",
+  "category": "运动/鞋类/羽毛球鞋",
+  "scenario": "同款识别"
+}
+```
+
+Run:
+
+```powershell
+$env:PYTHONPATH = "d:\Trae CN Work\Rag-Agent"
+python rag/scripts/evaluate_performance.py --dataset rag/eval/datasets/rag_eval_dataset.jsonl
+```
+
+Useful variants:
+
+```powershell
+python rag/scripts/evaluate_performance.py --modes text
+python rag/scripts/evaluate_performance.py --modes image hybrid --top-k 10
+python rag/scripts/evaluate_performance.py --output-dir rag/eval/reports
+```
+
+Reports are written to `rag/eval/reports/<run_id>/`:
+
+- `summary.json`: run metadata, aggregate metrics, and segment metrics.
+- `cases.csv`: per-case predictions, hits, clarify labels, citation checks, and latency.
+- `summary.md`: human-readable baseline report.
+
+Metrics covered: `Top-1`, `Top-3`, `Recall@K`, `MRR`, `P50 latency`, `P95 latency`, `clarify rate`, clarify `TP/FP/FN`, and rule-based `citation consistency`.
+
+## 10. End-to-End Evaluation
+
+`rag/scripts/evaluate_end_to_end.py` covers answer-level evaluation on the full backend chain. It supports two modes:
+
+- `api`: upload image -> `POST /api/v1/chat` -> consume SSE stream -> score final answer.
+- `orchestrator`: call `backend/app/agent/orchestrator.py` directly without starting the HTTP service.
+
+Default dataset:
+
+```text
+rag/eval/datasets/rag_e2e_dataset.jsonl
+```
+
+Extra fields used by the end-to-end runner:
+
+```json
+{
+  "expected_answer_keywords": ["回弹", "碳板", "比赛"],
+  "forbidden_answer_keywords": ["我不知道", "无法判断"]
+}
+```
+
+Run with backend API:
+
+```powershell
+$env:PYTHONPATH = "d:\Trae CN Work\Rag-Agent"
+python rag/scripts/evaluate_end_to_end.py --mode api --base-url http://127.0.0.1:8000
+```
+
+Run without HTTP service:
+
+```powershell
+$env:PYTHONPATH = "d:\Trae CN Work\Rag-Agent"
+python rag/scripts/evaluate_end_to_end.py --mode orchestrator
+```
+
+Report files:
+
+- `e2e_summary.json`: aggregate metrics for candidate hit, citation consistency, answer usefulness, clarify accuracy, and latency.
+- `e2e_cases.csv`: per-case answer text, final event status, citation counts, and usefulness signals.
+- `e2e_summary.md`: compact baseline report.
+
+## 11. Local Regression Entry
+
+Use the local regression wrapper to run retrieval evaluation and end-to-end evaluation in sequence:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File rag/scripts/run_eval_regression.ps1
+```
+
+Switch to orchestrator mode if the backend service is not running:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File rag/scripts/run_eval_regression.ps1 -E2EMode orchestrator
+```
