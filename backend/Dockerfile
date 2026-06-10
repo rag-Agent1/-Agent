@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -6,14 +6,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/requirements.txt /app/backend/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
-COPY . .
+COPY backend/ /app/backend/
+COPY rag/ /app/rag/
+
+ENV PYTHONPATH=/app
 
 EXPOSE 8000
 
-CMD ["gunicorn", "app_mvp.main:app", \
+WORKDIR /app/backend
+
+CMD ["gunicorn", "app.main:app", \
      "-k", "uvicorn.workers.UvicornWorker", \
      "--bind", "0.0.0.0:8000", \
      "--workers", "4", \
