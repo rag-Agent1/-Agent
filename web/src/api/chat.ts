@@ -9,7 +9,7 @@ export async function uploadImage(file: File): Promise<ApiResponse<UploadData>> 
 
 export async function createChat(
   sessionId: string | null,
-  imageId: string,
+  imageId: string | null,
   text?: string | null,
 ): Promise<ApiResponse<ChatData>> {
   return apiPost<ChatData>('/api/v1/chat', {

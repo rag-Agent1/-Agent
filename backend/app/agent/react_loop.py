@@ -35,7 +35,7 @@ async def react_loop(
         if not response.tool_calls:
             content = response.content or ""
             if content:
-                await queue.put(("delta", {"text": content}))
+                await queue.put(("delta_text", {"text": content}))
                 full_response += content
             logger.info(f"[ReAct] No tools called, ending loop")
             break
@@ -72,7 +72,10 @@ async def react_loop(
 
             result_data = json.loads(tool_result)
             if name == "search_by_image":
-                await queue.put(("candidates", result_data.get("candidates", [])))
+                await queue.put(("candidates", {"candidates": result_data.get("candidates", [])}))
+
+            if name == "search_by_text":
+                await queue.put(("candidates", {"candidates": result_data.get("candidates", [])}))
 
             if name == "search_knowledge":
                 await queue.put(("citations", {"citations": result_data.get("citations", [])}))
@@ -81,20 +84,20 @@ async def react_loop(
                 if result_data.get("citations"):
                     await queue.put(("citations", {"citations": result_data.get("citations", [])}))
                 answer = result_data["answer"]
-                await queue.put(("delta", {"text": answer}))
+                await queue.put(("delta_text", {"text": answer}))
                 full_response += answer
                 logger.info(f"[ReAct] final_answer received, ending")
                 return full_response
 
             if name == "clarify":
                 result_data.pop("need_clarify", None)
-                await queue.put(("delta", {"text": result_data.get("clarify_question", "")}))
+                await queue.put(("delta_text", {"text": result_data.get("clarify_question", "")}))
                 full_response += result_data.get("clarify_question", "")
                 return full_response
 
     if not full_response:
         fallback = "未能生成推荐，请重试。"
-        await queue.put(("delta", {"text": fallback}))
+        await queue.put(("delta_text", {"text": fallback}))
         full_response = fallback
 
     return full_response

@@ -28,10 +28,10 @@ logger.info(f"Loaded {len(REGISTRY)} tools: {list(REGISTRY.keys())}")
 
 @router.post("/api/v1/chat")
 async def create_chat(req: ChatRequest):
-    if not req.image_id and not req.session_id:
+    if not req.image_id and not req.text:
         raise HTTPException(status_code=422, detail={
             "code": "INVALID_PARAMS",
-            "message": "首次请求必须提供 image_id"
+            "message": "必须提供图片ID或文本内容"
         })
 
     session = session_mgr.get_or_create(req.session_id)

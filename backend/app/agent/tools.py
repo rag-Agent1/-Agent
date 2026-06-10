@@ -171,6 +171,54 @@ async def search_by_image(image_id: str) -> dict:
 
 
 @register_tool(
+    name="search_by_text",
+    description="Search products by text query when no image is available.",
+    parameters={
+        "type": "object",
+        "properties": {
+            "query": {
+                "type": "string",
+                "description": "Text query describing the product to search for.",
+            }
+        },
+        "required": ["query"],
+    },
+)
+async def search_by_text(query: str) -> dict:
+    logger.info(f"[Tool] search_by_text(query={query})")
+    from rag.embedding import embed_text
+    from rag.text_retrieval import search_by_text as rag_text_search
+
+    loop = asyncio.get_running_loop()
+    embedding = await loop.run_in_executor(None, embed_text, query)
+    if not embedding:
+        return {"error": "text embedding failed", "candidates": []}
+
+    results = await loop.run_in_executor(
+        None,
+        lambda: rag_text_search(embedding, top_k=5, score_threshold=0.0),
+    )
+    candidates = [
+        {
+            "sku": result.product_id,
+            "score": float(result.score),
+            "title": result.name,
+            "image_url": result.image_url or "",
+            "price": float(result.price) if result.price is not None else None,
+            "description": result.description,
+            "category": result.category,
+            "need_clarify": bool(result.need_clarify),
+        }
+        for result in results
+    ]
+    _RAG_STATE["candidates"] = candidates
+    return {
+        "candidates": candidates,
+        "need_clarify": bool(candidates and candidates[0].get("need_clarify")),
+    }
+
+
+@register_tool(
     name="get_product_detail",
     description="Get structured detail for one candidate product.",
     parameters={

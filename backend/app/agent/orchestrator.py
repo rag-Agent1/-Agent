@@ -55,8 +55,12 @@ async def run_flow(
         candidates_result = await call_tool("search_by_image", image_id=image_id)
         candidates_data = json.loads(candidates_result)
         candidates = candidates_data.get("candidates", [])
+    elif text:
+        candidates_result = await call_tool("search_by_text", query=text)
+        candidates_data = json.loads(candidates_result)
+        candidates = candidates_data.get("candidates", [])
 
-    await queue.put(("candidates", candidates))
+    await queue.put(("candidates", {"candidates": candidates}))
 
     citations: list[dict] = []
     if candidates:
@@ -74,7 +78,7 @@ async def run_flow(
 
     if not candidates and not history:
         fallback = "未找到匹配的商品，请尝试其他图片或补充需求。"
-        await queue.put(("delta", {"text": fallback}))
+        await queue.put(("delta_text", {"text": fallback}))
         return fallback
 
     messages = build_messages(

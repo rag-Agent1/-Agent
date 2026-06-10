@@ -7,6 +7,8 @@ router = APIRouter()
 @router.get("/api/v1/health")
 async def health():
     return {
+        "code": 0,
+        "message": "ok",
         "status": "ok",
         "timestamp": datetime.datetime.utcnow().isoformat()
     }

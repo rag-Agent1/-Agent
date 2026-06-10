@@ -63,19 +63,10 @@ export function useChat() {
     const file = state.selectedImageFile
 
     if (!file) {
-      // Text only — find last image from context
+      // Text only — send text query without image
       if (!text || text.trim() === '') return
-      if (!currentImageId) {
-        const lastImageMsg = [...state.messages].reverse().find(
-          m => m.role === 'user' && (m.imageUrl || m.imageLocalUri)
-        )
-        if (!lastImageMsg) {
-          state.error = '请先拍照或选择一张图片再提问'
-          return
-        }
-      }
-      addUserMessage(text ?? '')
-      startChat(text ?? '')
+      addUserMessage(text)
+      startChat(text)
       return
     }
 
@@ -207,8 +198,6 @@ export function useChat() {
   }
 
   const startChat = async (text?: string) => {
-    if (!currentImageId) return
-
     const msgId = `msg_${++messageCounter}`
     const assistantMsg: ChatMessage = {
       id: msgId,
