@@ -14,9 +14,9 @@ from app.core.stream_manager import stream_manager
 from app.agent.tools import REGISTRY, init_tools
 
 # LangGraph 导入
-from backend.app.graph.graph import agent_graph
-from backend.app.graph.memory import load_memory_to_state, save_memory_from_state
-from backend.app.graph.tools import init_tools as graph_init_tools
+from app.graph.graph import agent_graph
+from app.graph.memory import load_memory_to_state, save_memory_from_state
+from app.graph.tools import init_tools as graph_init_tools
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

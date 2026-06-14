@@ -4,15 +4,15 @@ import asyncio
 import json
 import logging
 
-from backend.app.graph.state import AgentState
-from backend.app.graph.tools import (
+from app.graph.state import AgentState
+from app.graph.tools import (
     embed_image_tool,
     embed_text_tool,
     hybrid_search_tool,
     search_by_image_tool,
     retrieve_citations_tool,
 )
-from backend.app.graph.llm import get_llm
+from app.graph.llm import get_llm
 
 logger = logging.getLogger(__name__)
 

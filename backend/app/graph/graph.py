@@ -5,8 +5,8 @@ import logging
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 
-from backend.app.graph.state import AgentState
-from backend.app.graph.nodes import (
+from app.graph.state import AgentState
+from app.graph.nodes import (
     intent_recognition_node,
     plan_node,
     embed_image_node,
