@@ -93,15 +93,20 @@ def ingest_data(csv_path: str, local_img_dir: str = "rag/data/images"):
             except Exception as e:
                 logger.warning(f"图片向量化失败: {product_id_raw}, 错误: {str(e)}")
 
-            # 3. 提取属性字典
-            row["attrs"] = extract_attrs(description)
+            # 3. 提取属性并扁平化
+            attrs = extract_attrs(description)
+            row["attrs_techs"] = ",".join(attrs.get("techs", []))
+            row["attrs_color"] = attrs.get("color", "未知")
+            # 移除 attrs 嵌套（PointStruct payload 不支持嵌套 dict）
+            row.pop("attrs", None)
 
-            # 4. 构造 Qdrant Point
+            # 4. 构造 Qdrant Point（payload 必须是扁平的字符串字典）
+            payload = {k: (str(v) if v is not None else "") for k, v in row.items()}
             vectors = {"text": text_vector}
             if image_vector:
                 vectors["image"] = image_vector
 
-            points.append(PointStruct(id=point_id, vector=vectors, payload=row))
+            points.append(PointStruct(id=point_id, vector=vectors, payload=payload))
 
     # 批量上传
     if points:

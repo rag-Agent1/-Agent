@@ -12,8 +12,10 @@ from rag.embedding import embed_text
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# 配置路径
-BASE_DIR = r"d:\Trae CN Work\Rag-Agent"
+# 配置路径（自动检测项目根目录）
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))  # rag/scripts/
+_RAG_DIR = os.path.dirname(_SCRIPT_DIR)  # rag/
+BASE_DIR = os.path.dirname(_RAG_DIR)  # Agent/（项目根目录）
 DATA_DIR = os.path.join(BASE_DIR, "rag", "data")
 PRODUCTS_CSV = os.path.join(DATA_DIR, "products.csv")
 

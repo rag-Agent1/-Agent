@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     qdrant_api_key: str = ""
     qdrant_host: str = "localhost"
     qdrant_port: int = 6333
+    qdrant_collection_image: str = "product_images"
+    qdrant_collection_text: str = "product_knowledge"
 
     max_image_size: int = 10485760
     allowed_extensions: str = "jpg,jpeg,png,webp"
