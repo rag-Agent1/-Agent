@@ -60,12 +60,13 @@ def build_graph() -> StateGraph:
     # === 普通边 ===
     builder.add_edge("intent_recognition", "plan")
 
-    # === 条件路由：Plan → 根据意图分发 ===
+    # === 条件路由：Plan → 根据计划第一步分发 ===
     builder.add_conditional_edges(
         "plan",
         lambda s: s.get("plan", ["ask_clarify"])[0] if s.get("plan") else "ask_clarify",
         {
             "embed_image": "embed_image",
+            "embed_text": "embed_text",
             "ask_clarify": "ask_clarify",
         },
     )

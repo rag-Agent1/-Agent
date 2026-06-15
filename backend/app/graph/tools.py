@@ -71,6 +71,28 @@ async def search_by_image_tool(image_embedding: list[float], top_k: int = 5) -> 
     ]
 
 
+async def search_by_text_tool(text_embedding: list[float], top_k: int = 10) -> list[dict]:
+    """以文搜图（纯文本检索商品）"""
+    from rag.text_retrieval import search_by_text
+    loop = asyncio.get_running_loop()
+    results = await loop.run_in_executor(
+        None, lambda: search_by_text(text_embedding, top_k=top_k, score_threshold=0.0)
+    )
+    return [
+        {
+            "sku": r.product_id,
+            "score": float(r.score),
+            "title": r.name,
+            "image_url": r.image_url or "",
+            "price": float(r.price) if r.price else None,
+            "description": r.description,
+            "category": r.category,
+            "need_clarify": bool(r.need_clarify),
+        }
+        for r in results
+    ]
+
+
 async def hybrid_search_tool(
     image_embedding: Optional[list[float]] = None,
     text_embedding: Optional[list[float]] = None,

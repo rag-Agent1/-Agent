@@ -10,6 +10,7 @@ from app.graph.tools import (
     embed_text_tool,
     hybrid_search_tool,
     search_by_image_tool,
+    search_by_text_tool,
     retrieve_citations_tool,
 )
 from app.graph.llm import get_llm
@@ -43,13 +44,24 @@ async def intent_recognition_node(state: AgentState) -> AgentState:
 async def plan_node(state: AgentState) -> AgentState:
     """Plan & Solve Node：根据意图生成执行计划"""
     intent = state.get("intent", "unclear")
-    plans = {
-        "find_similar": ["embed_image", "search", "retrieve_citations", "generate"],
-        "ask_product": ["embed_image", "search", "retrieve_citations", "generate"],
-        "compare": ["embed_image", "search", "retrieve_citations", "generate"],
-        "unclear": ["ask_clarify"],
-    }
-    state["plan"] = plans.get(intent, ["ask_clarify"])
+    has_image = bool(state.get("image_id"))
+    has_text = bool(state.get("text"))
+
+    # 检索计划：根据有无图片/文本动态生成
+    if intent in ("find_similar", "ask_product", "compare"):
+        steps = []
+        if has_image:
+            steps.append("embed_image")
+        if has_text:
+            steps.append("embed_text")
+        if not steps:  # 既无图又无文本，无法检索
+            steps = ["ask_clarify"]
+        else:
+            steps.extend(["search", "retrieve_citations", "generate"])
+    else:
+        steps = ["ask_clarify"]
+
+    state["plan"] = steps
     state["plan_step"] = 0
     logger.info("[Plan] Plan: %s", state["plan"])
     return state
@@ -88,6 +100,8 @@ async def search_node(state: AgentState) -> AgentState:
         )
     elif image_emb:
         candidates = await search_by_image_tool(image_emb, top_k=5)
+    elif text_emb:
+        candidates = await search_by_text_tool(text_emb, top_k=10)
     else:
         candidates = []
     state["candidates"] = candidates
