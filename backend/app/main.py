@@ -12,6 +12,7 @@ load_dotenv(_env_path, override=True)
 
 os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -21,8 +22,35 @@ from app.api.health import router as health_router
 from app.config import settings
 
 logging.basicConfig(level=settings.log_level, format="%(asctime)s | %(levelname)s | %(message)s")
+logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Agent Backend", version="0.2.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """启动：初始化 Qdrant 集合 + 探活 LLM（失败仅告警，不阻断启动）"""
+    try:
+        from rag.db_client import QdrantManager
+        qm = QdrantManager()
+        qm.init_collection("products")
+        qm.init_collection("citations")
+        logger.info("Qdrant 集合就绪 (products + citations)")
+    except Exception as e:
+        logger.warning(f"Qdrant 初始化失败（不阻断启动）: {e}")
+    try:
+        import asyncio
+        from app.graph.llm import get_llm
+        from langchain_core.messages import HumanMessage
+        await asyncio.wait_for(
+            get_llm().ainvoke([HumanMessage(content="ping")]),
+            timeout=10,
+        )
+        logger.info("LLM 探活成功")
+    except Exception as e:
+        logger.warning(f"LLM 探活失败（不阻断启动）: {e}")
+    yield
+
+
+app = FastAPI(title="Agent Backend", version="0.2.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

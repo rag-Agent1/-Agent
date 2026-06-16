@@ -31,10 +31,12 @@ def router(state: AgentState) -> str:
 
 
 def reflection_router(state: AgentState) -> str:
-    """反思路由：如果反思未通过，回到 generate"""
-    if state.get("reflection_passed"):
-        return "passed"
-    return "retry"
+    """反思路由：反思未通过则回到 generate 重试。
+
+    流式模式下重试会导致 generate 二次推送 token，前端回答闪烁。
+    演示环境默认通过（reflection_node 仍运行并记录反馈，但不重跑 generate）。
+    如需启用重试，需在 chat.py 发 reset_text 事件让前端清空已显示文本。"""
+    return "passed"
 
 
 def build_graph() -> StateGraph:

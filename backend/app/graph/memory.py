@@ -93,6 +93,13 @@ def load_memory_to_state(session_id: str, image_id: Optional[str], text: Optiona
     # 语义记忆
     state["preferences"] = SemanticMemory.get_preferences(session_id)
 
+    # 启发式：若上一轮是澄清问题且本轮用户有输入，视为已回答澄清
+    if text and session.history:
+        last = session.history[-1]
+        if last.get("role") == "assistant" and last.get("is_clarify"):
+            state["clarify_answered"] = True
+            state["need_clarify"] = False
+
     return state
 
 
@@ -111,6 +118,17 @@ def save_memory_from_state(state: dict):
         EpisodicMemory.append_history(session_id, {
             "role": "assistant",
             "content": state["final_answer"],
+        })
+    elif state.get("need_clarify") and state.get("clarify_question"):
+        # 澄清分支也存历史（带标记），供下轮恢复上下文
+        EpisodicMemory.append_history(session_id, {
+            "role": "user",
+            "content": state.get("text", ""),
+        })
+        EpisodicMemory.append_history(session_id, {
+            "role": "assistant",
+            "content": state["clarify_question"],
+            "is_clarify": True,
         })
 
     # 语义记忆：提取偏好

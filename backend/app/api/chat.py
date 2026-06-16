@@ -117,36 +117,41 @@ async def _run_flow(
     try:
         # 1. 从四层记忆系统加载初始状态
         initial_state = load_memory_to_state(session_id, image_id, text)
+        config = {"configurable": {"thread_id": session_id}}
 
-        # 2. 执行 LangGraph StateGraph（thread_id = session_id 隔离）
-        final_state = await agent_graph.ainvoke(
-            initial_state,
-            config={"configurable": {"thread_id": session_id}},
-        )
+        # 2. 用 astream_events 实现 token 级真流式（边跑边推 SSE）
+        async for event in agent_graph.astream_events(initial_state, config=config, version="v2"):
+            kind = event["event"]
+            name = event.get("name", "")
 
-        # 3. 将结果写回记忆系统
+            # 检索节点完成 → 先于回答推送，前端先看到商品卡片
+            if kind == "on_chain_end" and name == "search":
+                outs = event["data"].get("output") or {}
+                cands = outs.get("candidates", [])
+                if cands:
+                    await queue.put(("candidates", {"candidates": cands}))
+            elif kind == "on_chain_end" and name == "retrieve_citations":
+                outs = event["data"].get("output") or {}
+                cits = outs.get("citations", [])
+                if cits:
+                    await queue.put(("citations", {"citations": cits}))
+            # generate 节点的 LLM token → 逐字推送
+            elif kind == "on_chat_model_stream" and "generate" in event.get("tags", []):
+                chunk = event["data"].get("chunk")
+                token = getattr(chunk, "content", "") or ""
+                if token:
+                    await queue.put(("delta_text", {"text": token}))
+
+        # 3. 取最终 state 写回记忆 + 处理澄清分支
+        final_state = (await agent_graph.aget_state(config)).values
         save_memory_from_state(final_state)
 
-        # 4. 发送 SSE 事件（模拟流式输出）
-        candidates = final_state.get("candidates", [])
-        if candidates:
-            await queue.put(("candidates", candidates))
-
-        citations = final_state.get("citations", [])
-        if citations:
-            await queue.put(("citations", {"citations": citations}))
-
         need_clarify = final_state.get("need_clarify", False)
+        # 澄清分支：ask_clarify 用 ainvoke（非流式），其文本需整段补推
         if need_clarify:
             q = final_state.get("clarify_question", "")
-            await queue.put(("delta", {"text": q}))
-        else:
-            answer = final_state.get("final_answer", "")
-            if answer:
-                # 模拟流式输出：按 20 字符分段发送
-                for i in range(0, len(answer), 20):
-                    await queue.put(("delta", {"text": answer[i:i+20]}))
-                    await asyncio.sleep(0.02)
+            if q:
+                await queue.put(("delta_text", {"text": q}))
 
         await queue.put(("final", FinalEvent(
             need_clarify=need_clarify,

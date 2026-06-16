@@ -115,6 +115,11 @@ async def decide_clarify_node(state: AgentState) -> AgentState:
     state["need_clarify"] = False
     state["clarify_question"] = None
 
+    # 若用户已回答上一轮的澄清，直接放行不重复追问
+    if state.get("clarify_answered"):
+        logger.info("[Clarify] 用户已回答澄清，跳过追问")
+        return state
+
     if not candidates:
         state["need_clarify"] = True
         state["clarify_question"] = "暂时没有找到匹配的商品，能描述一下你想要的商品类型或者预算范围吗？"
@@ -167,7 +172,7 @@ async def retrieve_citations_node(state: AgentState) -> AgentState:
     return state
 
 
-async def generate_node(state: AgentState) -> AgentState:
+async def generate_node(state: AgentState, config) -> AgentState:
     """LLM 生成回答 Node（流式写入 queue）"""
     candidates = state.get("candidates", [])
     citations = state.get("citations", [])
@@ -209,9 +214,9 @@ async def generate_node(state: AgentState) -> AgentState:
     # 添加当前
     messages.append({"role": "user", "content": text or "推荐类似的产品"})
 
-    llm = get_llm(streaming=True)
+    llm = get_llm(streaming=True).with_config({"tags": ["generate"]})
     full_response = ""
-    async for chunk in llm.astream(messages):
+    async for chunk in llm.astream(messages, config=config):
         content = chunk.content or ""
         if content:
             full_response += content
