@@ -19,7 +19,7 @@ function scorePercent(score: number): number {
 
 <template>
   <div
-    class="w-[148px] shrink-0 rounded-xl bg-surface shadow-sm overflow-hidden cursor-pointer select-none active:scale-[0.96] transition-transform"
+    class="candidate-card w-[148px] shrink-0 rounded-xl bg-surface shadow-sm overflow-hidden cursor-pointer select-none active:scale-[0.96] transition-transform"
     @click="showDetail = true"
   >
     <div class="relative">

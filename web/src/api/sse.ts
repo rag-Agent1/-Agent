@@ -45,6 +45,16 @@ export function connectStreamWithParser(
     } catch { /* ignore */ }
   })
 
+  // 业务错误事件（后端主动 emit 的 event:error，e.data 是 JSON）
+  // 注意：连接层断开时也会触发 error 但 e.data 为 undefined，交给 onerror
+  es.addEventListener('error', (e: MessageEvent) => {
+    if (!e.data) return
+    try {
+      const data = JSON.parse(e.data)
+      onEvent({ type: 'error', message: data.message ?? '处理出错' })
+    } catch { /* ignore */ }
+  })
+
   es.onerror = () => {
     onError('SSE 连接断开')
   }

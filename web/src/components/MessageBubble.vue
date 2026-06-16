@@ -1,16 +1,32 @@
 <script setup lang="ts">
+import { ref, watch, nextTick } from 'vue'
 import type { ChatMessage } from '../types'
 import CandidateCard from './CandidateCard.vue'
 import CitationSection from './CitationSection.vue'
 import ClarifySection from './ClarifySection.vue'
 import SkeletonCard from './SkeletonCard.vue'
+import { useCardStagger } from '../composables/useGSAP'
 
-defineProps<{ message: ChatMessage }>()
+const props = defineProps<{ message: ChatMessage }>()
 const emit = defineEmits<{ clarifySend: [text: string] }>()
+const candidatesRef = ref<HTMLElement | null>(null)
+const { animateCards } = useCardStagger()
+
+// 候选商品出现时交错入场
+watch(
+  () => props.message.candidates?.length ?? 0,
+  async (n) => {
+    if (n > 0) {
+      await nextTick()
+      const els = candidatesRef.value?.querySelectorAll<HTMLElement>('.candidate-card')
+      if (els && els.length) animateCards(Array.from(els))
+    }
+  },
+)
 </script>
 
 <template>
-  <div class="flex w-full" :class="message.role === 'user' ? 'justify-end' : 'justify-start'">
+  <div class="message-bubble flex w-full" :class="message.role === 'user' ? 'justify-end' : 'justify-start'">
     <div :class="message.role === 'user' ? 'items-end' : 'items-start'" class="flex flex-col max-w-[75%] sm:max-w-[70%]">
       <!-- User image -->
       <img
@@ -42,7 +58,7 @@ const emit = defineEmits<{ clarifySend: [text: string] }>()
           }"
         >
           <!-- Candidates -->
-          <div v-if="message.candidates && message.candidates.length > 0" class="mb-2.5">
+          <div ref="candidatesRef" v-if="message.candidates && message.candidates.length > 0" class="mb-2.5">
             <p class="text-xs font-medium text-on-surface-variant/70 mb-2">候选商品</p>
             <div class="flex gap-2.5 overflow-x-auto scrollbar-hide">
               <CandidateCard

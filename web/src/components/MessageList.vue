@@ -2,17 +2,24 @@
 import { ref, watch, nextTick } from 'vue'
 import type { ChatMessage } from '../types'
 import MessageBubble from './MessageBubble.vue'
+import { useMessageAnimation } from '../composables/useGSAP'
 
 const props = defineProps<{ messages: ChatMessage[] }>()
 const emit = defineEmits<{ clarifySend: [text: string] }>()
 const listRef = ref<HTMLDivElement | null>(null)
+const { animateIn } = useMessageAnimation()
 
 watch(
   () => props.messages.length,
-  async () => {
+  async (n, old) => {
     await nextTick()
     if (listRef.value) {
       listRef.value.scrollTop = listRef.value.scrollHeight
+      // 新增消息淡入上滑
+      if (n > (old ?? 0)) {
+        const last = listRef.value.querySelector('.message-bubble:last-child') as HTMLElement | null
+        if (last) animateIn(last)
+      }
     }
   },
   { flush: 'post' },
