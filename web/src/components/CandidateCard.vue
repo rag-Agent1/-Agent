@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import type { Candidate } from '../types'
 import CandidateDetail from './CandidateDetail.vue'
+import { resolveImageUrl } from '../utils/image'
 
 const props = defineProps<{ candidate: Candidate }>()
 const showDetail = ref(false)
@@ -24,7 +25,7 @@ function scorePercent(score: number): number {
   >
     <div class="relative">
       <img
-        :src="candidate.image_url"
+        :src="resolveImageUrl(candidate.image_url)"
         :alt="candidate.title"
         class="w-full h-[124px] object-cover rounded-t-xl"
         loading="lazy"

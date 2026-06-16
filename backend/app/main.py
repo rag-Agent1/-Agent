@@ -15,6 +15,7 @@ os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.upload import router as upload_router
 from app.api.chat import router as chat_router
@@ -63,6 +64,11 @@ app.add_middleware(
 app.include_router(upload_router)
 app.include_router(chat_router)
 app.include_router(health_router)
+
+# 静态服务商品图片（rag/data/images/lining_XXX.jpg）→ /api/v1/images/lining_XXX.jpg
+_PRODUCT_IMAGES_DIR = os.path.join(_PROJECT_ROOT, "rag", "data", "images")
+os.makedirs(_PRODUCT_IMAGES_DIR, exist_ok=True)
+app.mount("/api/v1/images", StaticFiles(directory=_PRODUCT_IMAGES_DIR), name="product_images")
 
 
 if __name__ == "__main__":

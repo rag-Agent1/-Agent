@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Candidate } from '../types'
+import { resolveImageUrl } from '../utils/image'
 
 defineProps<{ candidate: Candidate }>()
 const emit = defineEmits<{ dismiss: [] }>()
@@ -23,7 +24,7 @@ function scorePercent(score: number): number {
     <div class="bg-surface rounded-t-2xl sm:rounded-2xl w-full sm:max-w-lg max-h-[85vh] overflow-y-auto shadow-xl">
       <div class="p-5">
         <img
-          :src="candidate.image_url"
+          :src="resolveImageUrl(candidate.image_url)"
           :alt="candidate.title"
           class="w-full h-[240px] object-cover rounded-xl"
         />
