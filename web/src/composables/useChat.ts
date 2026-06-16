@@ -63,17 +63,8 @@ export function useChat() {
     const file = state.selectedImageFile
 
     if (!file) {
-      // Text only — find last image from context
+      // 纯文字检索（无需图片，后端支持 session_id + text）
       if (!text || text.trim() === '') return
-      if (!currentImageId) {
-        const lastImageMsg = [...state.messages].reverse().find(
-          m => m.role === 'user' && (m.imageUrl || m.imageLocalUri)
-        )
-        if (!lastImageMsg) {
-          state.error = '请先拍照或选择一张图片再提问'
-          return
-        }
-      }
       addUserMessage(text ?? '')
       startChat(text ?? '')
       return
@@ -207,8 +198,6 @@ export function useChat() {
   }
 
   const startChat = async (text?: string) => {
-    if (!currentImageId) return
-
     const msgId = `msg_${++messageCounter}`
     const assistantMsg: ChatMessage = {
       id: msgId,
@@ -230,7 +219,8 @@ export function useChat() {
     state.error = null
 
     try {
-      const chatRes = await createChat(sessionId, currentImageId, text)
+      // imageId 为空时走纯文字检索（后端接受 session_id + text）
+      const chatRes = await createChat(sessionId, currentImageId ?? '', text)
       if (chatRes.code !== 0 || !chatRes.data) {
         updateStreamingError(chatRes.message || '请求失败')
         return
