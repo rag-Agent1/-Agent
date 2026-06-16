@@ -1,6 +1,6 @@
 param(
     [string]$Python = "python",
-    [string]$ProjectRoot = "D:\Trae CN Work\Rag-Agent",
+    [string]$ProjectRoot = (Get-Location).Path,
     [string]$BaseUrl = "http://127.0.0.1:8000",
     [ValidateSet("api", "orchestrator")]
     [string]$E2EMode = "api"

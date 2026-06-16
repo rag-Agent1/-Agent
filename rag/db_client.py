@@ -29,6 +29,7 @@ class QdrantManager:
                 self.client = QdrantClient(
                     url=self.url,
                     api_key=self.api_key,
+                    timeout=60,
                 )
                 logger.info(f"成功连接至 Qdrant Cloud: {self.url}")
             else:
@@ -41,7 +42,9 @@ class QdrantManager:
 
     def init_collection(self, collection_name="products"):
         """
-        初始化 Collection，配置双向量支持 (Text + Image)
+        初始化 Collection，按集合名配置命名向量：
+        - products: text(1024) + image(512) 双向量
+        - citations: text(1024) 单向量
         """
         try:
             # 检查 Collection 是否已存在
@@ -53,16 +56,21 @@ class QdrantManager:
                 return
 
             logger.info(f"正在创建 Collection: {collection_name}...")
-            
-            # 核心配置：定义两个命名向量空间
-            # 1. text: 1024 维 (对应 BGE-M3)
-            # 2. image: 512 维 (对应 CLIP)
-            self.client.recreate_collection(
-                collection_name=collection_name,
-                vectors_config={
+
+            # 按集合名区分向量配置
+            if collection_name == "products":
+                vectors_config = {
                     "text": VectorParams(size=1024, distance=Distance.COSINE),
                     "image": VectorParams(size=512, distance=Distance.COSINE),
                 }
+            else:  # citations 只需文本向量
+                vectors_config = {
+                    "text": VectorParams(size=1024, distance=Distance.COSINE),
+                }
+
+            self.client.recreate_collection(
+                collection_name=collection_name,
+                vectors_config=vectors_config,
             )
             logger.info(f"Collection '{collection_name}' 初始化成功。")
         except Exception as e:

@@ -17,6 +17,12 @@ def refine_knowledge_base():
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
+# 路径常量（绝对路径，避免 cwd 依赖）
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_RAG_DIR = os.path.dirname(_SCRIPT_DIR)
+DEFAULT_IMG_DIR = os.path.join(_RAG_DIR, "data", "images")
+DEFAULT_CSV = os.path.join(_RAG_DIR, "data", "products.csv")
+
 def generate_deterministic_uuid(input_str: str) -> str:
     """根据输入字符串生成确定性的 UUID"""
     return str(uuid.uuid5(uuid.NAMESPACE_DNS, input_str))
@@ -52,10 +58,20 @@ def extract_attrs(description: str) -> Dict:
                 
     return attrs
 
-def ingest_data(csv_path: str, local_img_dir: str = "rag/data/images"):
+def ingest_data(csv_path: str = DEFAULT_CSV, local_img_dir: str = DEFAULT_IMG_DIR, recreate: bool = False):
     """从 CSV 读取数据，向量化并导入 Qdrant"""
     client = get_qdrant_client()
     collection_name = "products"
+
+    if recreate:
+        try:
+            client.delete_collection(collection_name)
+            logger.info(f"已删除旧集合 {collection_name}")
+        except Exception:
+            pass
+        from rag.db_client import QdrantManager
+        QdrantManager().init_collection(collection_name)
+        logger.info(f"已重建集合 {collection_name}（双向量 text+image）")
 
     if not os.path.exists(csv_path):
         logger.error(f"找不到数据文件: {csv_path}")
@@ -128,6 +144,10 @@ def ingest_data(csv_path: str, local_img_dir: str = "rag/data/images"):
             logger.error(f"同步失败: {str(e)}")
 
 if __name__ == "__main__":
-    # 确保 PYTHONPATH 正确
-    csv_file = "rag/data/products.csv"
-    ingest_data(csv_file)
+    import argparse
+    parser = argparse.ArgumentParser(description="商品数据向量化入库 Qdrant")
+    parser.add_argument("--csv", default=DEFAULT_CSV, help="products.csv 路径")
+    parser.add_argument("--img-dir", default=DEFAULT_IMG_DIR, help="本地图片目录")
+    parser.add_argument("--recreate", action="store_true", help="删除并重建 products 集合（含双向量）")
+    args = parser.parse_args()
+    ingest_data(args.csv, args.img_dir, recreate=args.recreate)

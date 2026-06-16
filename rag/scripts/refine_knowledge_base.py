@@ -25,22 +25,28 @@ def generate_deterministic_uuid(input_str: str) -> str:
 
 def chunk_description(description: str) -> List[Dict]:
     """
-    根据描述中的标签（如【核心科技】）进行切分
+    切分描述为知识片段。
+    1. 优先按【标签】格式切分（兼容结构化描述）
+    2. 无标签时按空格/顿号/逗号切成特性片段（兼容纯文本描述）
     返回: List[Dict(content, tag)]
     """
-    # 查找所有标签及其内容
-    # 模式：【标签名】内容直到下一个标签或结尾
+    # 1. 优先按【标签】切
     pattern = r"【(.*?)】(.*?)(?=【|$)"
     matches = re.findall(pattern, description, re.DOTALL)
-    
+    if matches:
+        return [
+            {"tag": tag, "content": c.strip().rstrip("。").rstrip("；")}
+            for tag, c in matches if c.strip()
+        ]
+
+    # 2. 无标签：按分隔符切成特性片段
     chunks = []
-    for tag, content in matches:
-        content = content.strip().rstrip("。").rstrip("；")
-        if content:
-            chunks.append({
-                "tag": tag,
-                "content": content
-            })
+    idx = 0
+    for feat in re.split(r"[ 、,，/;；]+", description):
+        feat = feat.strip().rstrip("。").rstrip("；")
+        if len(feat) >= 2:  # 过滤太短的碎片
+            chunks.append({"tag": f"特性{idx}", "content": feat})
+            idx += 1
     return chunks
 
 def refine_knowledge_base():
@@ -87,7 +93,7 @@ def refine_knowledge_base():
                     "full_text": text_to_embed
                 }
                 
-                points.append(PointStruct(id=point_id, vector=vector, payload=payload))
+                points.append(PointStruct(id=point_id, vector={"text": vector}, payload=payload))
 
     # 批量上传
     if points:
