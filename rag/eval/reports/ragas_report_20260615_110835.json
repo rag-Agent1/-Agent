@@ -1,0 +1,10 @@
+{
+  "run_id": "20260615_110835",
+  "dataset": "rag/eval/datasets/rag_eval_dataset.jsonl",
+  "metrics": {
+    "faithfulness": NaN,
+    "context_recall": 0.0,
+    "context_precision": 0.7189797979364283
+  },
+  "num_cases": 5
+}

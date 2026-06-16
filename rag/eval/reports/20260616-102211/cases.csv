@@ -1,0 +1,16 @@
+﻿test_id,mode,gold_sku_id,predicted_top1,predicted_topk,top1_hit,top3_hit,recall_at_k,reciprocal_rank,latency_ms,should_clarify,predicted_clarify,clarify_tp,clarify_fp,clarify_fn,citation_consistent,citation_hit_count,citations_returned,status,difficulty,scenario,category,note
+case-001,text,lining_001,lining_001,"[""lining_001"", ""lining_019"", ""lining_006"", ""lining_025"", ""lining_014""]",True,True,1.0,1.0,1246.561207997729,False,False,0,0,0,True,3,5,ok,easy,同款识别,运动/鞋类/羽毛球鞋,
+case-002,text,lining_003,lining_003,"[""lining_003"", ""lining_015"", ""lining_021"", ""lining_024"", ""lining_009""]",True,True,1.0,1.0,3835.833619999903,False,False,0,0,0,True,3,5,ok,easy,同款识别,运动/鞋类/羽毛球鞋,
+case-003,text,lining_005,lining_005,"[""lining_005"", ""lining_013"", ""lining_014"", ""lining_022"", ""lining_023""]",True,True,1.0,1.0,441.5116689997376,False,False,0,0,0,True,3,5,ok,medium,同款识别,运动/鞋类/羽毛球鞋,
+case-004,text,lining_003,lining_021,"[""lining_021"", ""lining_003"", ""lining_018"", ""lining_009"", ""lining_008""]",False,True,0.6666666666666666,1.0,782.3179170009098,False,True,0,1,0,True,3,5,ok,medium,近似替代,运动/鞋类/羽毛球鞋,
+case-005,text,lining_001,lining_021,"[""lining_021"", ""lining_016"", ""lining_003"", ""lining_011"", ""lining_018""]",False,False,0.0,0.0,487.1254960016813,False,False,0,0,0,False,0,5,ok,medium,近似替代,运动/鞋类/羽毛球鞋,
+case-006,text,lining_002,lining_002,"[""lining_002"", ""lining_003"", ""lining_022"", ""lining_023"", ""lining_004""]",True,True,1.0,1.0,492.6528479991248,False,False,0,0,0,True,1,5,ok,medium,近似替代,运动/鞋类/羽毛球鞋,
+case-007,text,lining_003,lining_003,"[""lining_003"", ""lining_021"", ""lining_023"", ""lining_016"", ""lining_018""]",True,True,0.6666666666666666,1.0,503.6233579994587,False,False,0,0,0,True,2,5,ok,medium,近似替代,运动/鞋类/羽毛球鞋,
+case-008,text,lining_001,lining_003,"[""lining_003"", ""lining_022"", ""lining_016"", ""lining_005"", ""lining_018""]",False,False,0.3333333333333333,1.0,527.1841089997906,True,False,0,0,1,False,0,5,ok,hard,低置信澄清,运动/鞋类/羽毛球鞋,
+case-009,text,lining_001,lining_005,"[""lining_005"", ""lining_014"", ""lining_011"", ""lining_022"", ""lining_016""]",False,False,0.0,0.0,468.1459059975168,True,True,1,0,0,False,0,5,ok,hard,低置信澄清,运动/鞋类/羽毛球鞋,
+case-010,text,lining_003,lining_005,"[""lining_005"", ""lining_002"", ""lining_023"", ""lining_011"", ""lining_022""]",False,False,0.0,0.0,225.5583910009591,True,True,1,0,0,False,0,5,ok,hard,低置信澄清,运动/鞋类/羽毛球鞋,
+case-011,text,lining_001,lining_001,"[""lining_001"", ""lining_007"", ""lining_025"", ""lining_006"", ""lining_008""]",True,True,1.0,1.0,536.9378940013121,False,True,0,1,0,True,3,5,ok,easy,知识问答,运动/鞋类/羽毛球鞋,
+case-012,text,lining_003,lining_003,"[""lining_003"", ""lining_015"", ""lining_018"", ""lining_024"", ""lining_004""]",True,True,1.0,1.0,497.5353079971683,False,False,0,0,0,True,3,5,ok,easy,知识问答,运动/鞋类/羽毛球鞋,
+case-013,text,lining_001,,[],False,False,0.0,0.0,0.0,False,,0,0,0,,0,0,skipped,easy,图片同款(占位),运动/鞋类/羽毛球鞋,missing query_text or embedding generation failed
+case-014,text,lining_003,,[],False,False,0.0,0.0,0.0,False,,0,0,0,,0,0,skipped,easy,图片同款(占位),运动/鞋类/羽毛球鞋,missing query_text or embedding generation failed
+case-015,text,lining_005,,[],False,False,0.0,0.0,0.0,False,,0,0,0,,0,0,skipped,easy,图片同款(占位),运动/鞋类/羽毛球鞋,missing query_text or embedding generation failed

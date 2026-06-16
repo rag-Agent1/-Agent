@@ -1,0 +1,103 @@
+{
+  "run_id": "20260616-103252",
+  "dataset_path": "/home/user/projects/AgentProject/Agent/rag/eval/datasets/rag_eval_dataset.jsonl",
+  "dataset_size": 15,
+  "top_k": 5,
+  "started_at": "2026-06-16T10:32:52.399708+08:00",
+  "modes": {
+    "text": {
+      "total_cases": 15,
+      "executed_cases": 12,
+      "skipped_cases": 3,
+      "status_breakdown": {
+        "ok": 12,
+        "skipped": 3
+      },
+      "metrics": {
+        "available_rate": 0.8,
+        "top1": 0.5833,
+        "top3": 0.6667,
+        "recall_at_k": 0.6389,
+        "mrr": 0.75,
+        "clarify_rate": 0.3333,
+        "citation_consistency": 0.6667,
+        "latency_ms_p50": 474.295,
+        "latency_ms_p95": 893.005,
+        "latency_ms_avg": 524.247
+      },
+      "clarify_confusion": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 1,
+        "precision": 0.5,
+        "recall": 0.6667
+      },
+      "segments": {
+        "scenario": {
+          "同款识别": {
+            "cases": 3,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.0,
+            "latency_ms_p95": 1004.637
+          },
+          "近似替代": {
+            "cases": 4,
+            "top1": 0.5,
+            "top3": 0.75,
+            "clarify_rate": 0.25,
+            "latency_ms_p95": 458.763
+          },
+          "低置信澄清": {
+            "cases": 3,
+            "top1": 0.0,
+            "top3": 0.0,
+            "clarify_rate": 0.6667,
+            "latency_ms_p95": 563.011
+          },
+          "知识问答": {
+            "cases": 2,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.5,
+            "latency_ms_p95": 740.025
+          }
+        },
+        "difficulty": {
+          "easy": {
+            "cases": 4,
+            "top1": 1.0,
+            "top3": 1.0,
+            "clarify_rate": 0.25,
+            "latency_ms_p95": 1014.693
+          },
+          "medium": {
+            "cases": 5,
+            "top1": 0.6,
+            "top3": 0.8,
+            "clarify_rate": 0.2,
+            "latency_ms_p95": 479.412
+          },
+          "hard": {
+            "cases": 3,
+            "top1": 0.0,
+            "top3": 0.0,
+            "clarify_rate": 0.6667,
+            "latency_ms_p95": 563.011
+          }
+        },
+        "category": {
+          "运动/鞋类/羽毛球鞋": {
+            "cases": 12,
+            "top1": 0.5833,
+            "top3": 0.6667,
+            "clarify_rate": 0.3333,
+            "latency_ms_p95": 893.005
+          }
+        }
+      }
+    }
+  },
+  "finished_at": "2026-06-16T10:33:19.432173+08:00",
+  "duration_seconds": 27.032
+}

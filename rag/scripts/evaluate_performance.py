@@ -177,9 +177,12 @@ def _evaluate_citations(
 def _pick_failure_cases(results: List[CaseResult], n: int = 3) -> List[CaseResult]:
     """挑 ≤n 条代表性失败：status 非 ok > top1 未命中 > 澄清错判(fp/fn)"""
     failures: List[CaseResult] = []
-    failures += [r for r in results if r.status != "ok"]
+    # 优先级 1: top1 未命中（真实检索问题，归因价值最高）
     failures += [r for r in results if r.status == "ok" and not r.top1_hit]
+    # 优先级 2: 澄清误判（阈值问题）
     failures += [r for r in results if r.status == "ok" and r.top1_hit and (r.clarify_fp or r.clarify_fn)]
+    # 优先级 3: 不可用（skipped/error，mode 不匹配或环境问题）
+    failures += [r for r in results if r.status != "ok"]
     seen = set()
     unique: List[CaseResult] = []
     for r in failures:
