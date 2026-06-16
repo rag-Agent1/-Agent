@@ -174,6 +174,21 @@ def _evaluate_citations(
     return bool(hit_count), hit_count, len(citations)
 
 
+def _pick_failure_cases(results: List[CaseResult], n: int = 3) -> List[CaseResult]:
+    """挑 ≤n 条代表性失败：status 非 ok > top1 未命中 > 澄清错判(fp/fn)"""
+    failures: List[CaseResult] = []
+    failures += [r for r in results if r.status != "ok"]
+    failures += [r for r in results if r.status == "ok" and not r.top1_hit]
+    failures += [r for r in results if r.status == "ok" and r.top1_hit and (r.clarify_fp or r.clarify_fn)]
+    seen = set()
+    unique: List[CaseResult] = []
+    for r in failures:
+        if id(r) not in seen:
+            seen.add(id(r))
+            unique.append(r)
+    return unique[:n]
+
+
 class RAGEvaluator:
     def __init__(self, dataset_path: Path, output_dir: Path, top_k: int):
         self.dataset_path = dataset_path
@@ -313,6 +328,7 @@ class RAGEvaluator:
             "skipped_cases": len(skipped),
             "status_breakdown": dict(Counter(result.status for result in results)),
             "metrics": {
+                "available_rate": round(_safe_ratio(len(executed), len(results)), 4),
                 "top1": round(_safe_ratio(sum(r.top1_hit for r in executed), len(executed)), 4),
                 "top3": round(_safe_ratio(sum(r.top3_hit for r in executed), len(executed)), 4),
                 "recall_at_k": round(
@@ -383,20 +399,20 @@ class RAGEvaluator:
                     row = asdict(result)
                     row["predicted_topk"] = json.dumps(row["predicted_topk"], ensure_ascii=False)
                     writer.writerow(row)
-        (report_dir / "summary.md").write_text(self._render_markdown(summary), encoding="utf-8")
+        (report_dir / "summary.md").write_text(
+            self._render_markdown(summary, all_results), encoding="utf-8"
+        )
         logger.info(f"\nReports written to: {report_dir}")
 
-    def _render_markdown(self, summary: Dict[str, Any]) -> str:
+    def _render_markdown(
+        self, summary: Dict[str, Any], all_results: List[CaseResult]
+    ) -> str:
         lines = [
-            "# RAG Evaluation Report",
+            "# RAG 检索评测报告",
             "",
             f"- Run ID: `{summary['run_id']}`",
-            f"- Dataset: `{summary['dataset_path']}`",
-            f"- Dataset Size: `{summary['dataset_size']}`",
-            f"- Top K: `{summary['top_k']}`",
-            f"- Started At: `{summary['started_at']}`",
-            f"- Finished At: `{summary['finished_at']}`",
-            f"- Duration Seconds: `{summary['duration_seconds']}`",
+            f"- Dataset: `{summary['dataset_path']}`（{summary['dataset_size']} 条）",
+            f"- Top K: `{summary['top_k']}` | 耗时: `{summary['duration_seconds']}s`",
             "",
         ]
         for mode, mode_summary in summary["modes"].items():
@@ -404,22 +420,67 @@ class RAGEvaluator:
             confusion = mode_summary["clarify_confusion"]
             lines.extend(
                 [
-                    f"## {mode}",
+                    f"## {mode} 模式",
                     "",
-                    f"- Executed: `{mode_summary['executed_cases']}`",
-                    f"- Skipped: `{mode_summary['skipped_cases']}`",
-                    f"- Top-1: `{metrics['top1']:.2%}`",
-                    f"- Top-3: `{metrics['top3']:.2%}`",
-                    f"- Recall@K: `{metrics['recall_at_k']:.2%}`",
-                    f"- MRR: `{metrics['mrr']:.4f}`",
-                    f"- Clarify Rate: `{metrics['clarify_rate']:.2%}`",
-                    f"- Citation Consistency: `{metrics['citation_consistency']:.2%}`",
-                    f"- Latency P50: `{metrics['latency_ms_p50']:.3f} ms`",
-                    f"- Latency P95: `{metrics['latency_ms_p95']:.3f} ms`",
-                    f"- Clarify TP/FP/FN: `{confusion['tp']}/{confusion['fp']}/{confusion['fn']}`",
+                    "| 指标 | 值 |",
+                    "|------|----|",
+                    f"| 用例数 / 可用数 | {mode_summary['total_cases']} / {mode_summary['executed_cases']} |",
+                    f"| 可用率 | {metrics['available_rate']:.2%} |",
+                    f"| Top-1 命中率 | {metrics['top1']:.2%} |",
+                    f"| Top-3 命中率 | {metrics['top3']:.2%} |",
+                    f"| Recall@K | {metrics['recall_at_k']:.2%} |",
+                    f"| MRR | {metrics['mrr']:.4f} |",
+                    f"| 澄清率 | {metrics['clarify_rate']:.2%} |",
+                    f"| Citation 一致性 | {metrics['citation_consistency']:.2%} |",
+                    f"| 延迟 P50 / P95 | {metrics['latency_ms_p50']:.1f} / {metrics['latency_ms_p95']:.1f} ms |",
+                    f"| 澄清 TP/FP/FN | {confusion['tp']}/{confusion['fp']}/{confusion['fn']} |",
                     "",
                 ]
             )
+            seg = mode_summary.get("segments", {}).get("scenario", {})
+            if seg:
+                lines.extend(
+                    [
+                        f"### {mode} 分场景指标",
+                        "",
+                        "| 场景 | 用例数 | Top-1 | Top-3 | 澄清率 | 延迟P95(ms) |",
+                        "|------|--------|-------|-------|--------|-------------|",
+                    ]
+                )
+                for scenario_name, bucket in seg.items():
+                    note = " *(占位参考)*" if "占位" in scenario_name else ""
+                    lines.append(
+                        f"| {scenario_name}{note} | {bucket['cases']} | "
+                        f"{bucket['top1']:.2%} | {bucket['top3']:.2%} | "
+                        f"{bucket['clarify_rate']:.2%} | {bucket['latency_ms_p95']:.1f} |"
+                    )
+                lines.append("")
+        mode_results = [r for r in all_results if r.mode == "text"] or all_results
+        failures = _pick_failure_cases(mode_results, n=3)
+        if failures:
+            lines.extend(["## 失败样例归因（Top 3）", ""])
+            for r in failures:
+                lines.extend(
+                    [
+                        f"### {r.test_id} [{r.scenario}]",
+                        f"- 输入: gold=`{r.gold_sku_id}`",
+                        f"- 实际: top1=`{r.predicted_top1}`, top3=`{r.predicted_topk[:3]}`, "
+                        f"status=`{r.status}`",
+                    ]
+                )
+                if r.status != "ok":
+                    lines.append(f"- 归因: [数据/环境] {r.note}")
+                    lines.append("- 改进: 补齐输入数据（图片/文本）或检查 embedding 加载")
+                elif not r.top1_hit:
+                    lines.append("- 归因: [检索] BGE-M3 向量区分度不足或 query 与 gold 描述差异大")
+                    lines.append("- 改进: 优化产品描述关键词 / 调 RRF 权重 / 加 reranker 精排")
+                elif r.clarify_fp:
+                    lines.append("- 归因: [阈值] 候选分数接近误触发澄清（gap<0.05）")
+                    lines.append("- 改进: 调宽 clarify gap 阈值或加意图置信度")
+                elif r.clarify_fn:
+                    lines.append("- 归因: [阈值] 该澄清却未澄清（top_score>0.6 漏判）")
+                    lines.append("- 改进: 提高澄清触发阈值或加多义性检测")
+                lines.append("")
         return "\n".join(lines)
 
 
