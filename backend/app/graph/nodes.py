@@ -42,28 +42,29 @@ async def intent_recognition_node(state: AgentState) -> AgentState:
 
 
 async def plan_node(state: AgentState) -> AgentState:
-    """Plan & Solve Node：根据意图生成执行计划"""
-    intent = state.get("intent", "unclear")
-    has_image = bool(state.get("image_id"))
-    has_text = bool(state.get("text"))
+    """Plan & Solve Node：根据输入生成执行计划。
 
-    # 检索计划：根据有无图片/文本动态生成
-    if intent in ("find_similar", "ask_product", "compare"):
-        steps = []
-        if has_image:
-            steps.append("embed_image")
-        if has_text:
-            steps.append("embed_text")
-        if not steps:  # 既无图又无文本，无法检索
-            steps = ["ask_clarify"]
-        else:
-            steps.extend(["search", "retrieve_citations", "generate"])
+    只要用户提供了图片或文本，一律走检索链路（由 decide_clarify 负责低置信澄清）。
+    不再用意图识别 gate 检索——LLM 会把具体商品描述误判为 unclear 导致死链路。
+    仅当既无图又无文本时才直接澄清。
+    """
+    has_image = bool(state.get("image_id"))
+    has_text = bool((state.get("text") or "").strip())
+
+    steps = []
+    if has_image:
+        steps.append("embed_image")
+    if has_text:
+        steps.append("embed_text")
+
+    if steps:
+        steps.extend(["search", "retrieve_citations", "generate"])
     else:
         steps = ["ask_clarify"]
 
     state["plan"] = steps
     state["plan_step"] = 0
-    logger.info("[Plan] Plan: %s", state["plan"])
+    logger.info("[Plan] intent=%s Plan: %s", state.get("intent"), state["plan"])
     return state
 
 
@@ -127,9 +128,12 @@ async def decide_clarify_node(state: AgentState) -> AgentState:
 
     top_score = candidates[0].get("score", 0) if candidates else 0
     if top_score < 0.6:
+        # 低置信：明确澄清
         state["need_clarify"] = True
         state["clarify_question"] = "搜索结果匹配度不高，请问你的预算大概在什么范围？或者有偏好的品牌吗？"
-    elif len(candidates) >= 2:
+    elif top_score < 0.72 and len(candidates) >= 2:
+        # 仅在「不确定区间」且 top1/top2 难分伯仲时澄清。
+        # top_score≥0.72 视为高置信，即使分差小也不追问（避免对具体查询过度澄清）。
         gap = candidates[0].get("score", 0) - candidates[1].get("score", 0)
         if gap < 0.05:
             state["need_clarify"] = True
@@ -154,6 +158,8 @@ async def ask_clarify_node(state: AgentState) -> AgentState:
     response = await llm.ainvoke(prompt)
     state["clarify_question"] = response.content.strip()
     state["clarify_answered"] = False
+    # 走到 ask_clarify 必然需要澄清，置 True 避免前端 final 事件无澄清信号导致死链路
+    state["need_clarify"] = True
     return state
 
 
@@ -180,9 +186,10 @@ async def generate_node(state: AgentState, config) -> AgentState:
     history = state.get("history", [])
     preferences = state.get("preferences", {})
 
-    # 构建 system prompt
+    # 构建候选文本：必须带 sku + description，才能与按 sku 索引的知识引用对齐，避免幻觉
     cand_text = "\n".join(
-        f"- {c.get('title', '')} 价格:{c.get('price', '')} 分类:{c.get('category', '')}"
+        f"- [{c.get('sku', '')}] {c.get('title', '')} 价格:{c.get('price', '')} "
+        f"描述:{c.get('description', '')}"
         for c in candidates[:5]
     ) or "无"
     cit_text = "\n".join(
